@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Envaco POP · Estudio Mystery Shopper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --verde: #2FB854;
+  --verde-oscuro: #7FE39C;
+  --verde-tint: rgba(47,184,84,.14);
+  --carbon: #F2EFE8;
+  --carbon-70: rgba(242,239,232,.68);
+  --carbon-45: rgba(242,239,232,.42);
+  --papel: #15130F;
+  --papel-2: #201D18;
+  --linea: rgba(255,255,255,.12);
+  --terracota: #E08159;
+  --terracota-tint: rgba(224,129,89,.14);
+  --ambar: #E0B24E;
+  --ambar-tint: rgba(224,178,78,.14);
+  --gallery-bg: #0A0908;
+  --radius-card: 14px;
+  --ease: cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--papel);
+  color:var(--carbon);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:'Fraunces',serif; font-weight:500; letter-spacing:-.01em;}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--verde-oscuro);
+  display:flex; align-items:center; gap:8px;
+}
+.eyebrow::before{content:''; width:16px; height:1px; background:var(--verde-oscuro); display:inline-block;}
+::selection{background:var(--verde); color:#fff;}
+button{font-family:inherit; cursor:pointer;}
+a{color:inherit;}
+
+/* ============ DECK / SCENES ============ */
+#deck{position:relative; width:100vw; height:100vh;}
+.scene{
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; justify-content:center;
+  padding: 5.5vh 8vw;
+  opacity:0; visibility:hidden;
+  transform:translateY(18px);
+  transition:opacity .55s var(--ease), transform .55s var(--ease), visibility 0s linear .55s;
+  overflow-y:auto;
+}
+.scene.active{
+  opacity:1; visibility:visible; transform:translateY(0);
+  transition:opacity .55s var(--ease), transform .55s var(--ease), visibility 0s;
+}
+.scene::-webkit-scrollbar{display:none;}
+.scene-inner{max-width:1180px; width:100%; margin:0 auto;}
+
+/* ============ TOP CHROME ============ */
+#chrome{position:fixed; top:0; left:0; right:0; z-index:50; pointer-events:none;}
+#progress-track{height:2px; background:var(--linea); width:100%;}
+#progress-fill{height:100%; background:var(--verde); width:0%; transition:width .5s var(--ease);}
+#chrome-row{display:flex; justify-content:space-between; align-items:center; padding:22px 9vw 0; pointer-events:none;}
+#act-label{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--carbon-45);}
+#scene-counter{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--carbon-45); letter-spacing:.05em;}
+
+/* click zones for nav */
+.navzone{position:fixed; top:0; bottom:0; width:14%; z-index:40; cursor:pointer;}
+#navzone-prev{left:0;}
+#navzone-next{right:0;}
+
+#hint{
+  position:fixed; bottom:22px; left:50%; transform:translateX(-50%);
+  font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--carbon-45);
+  letter-spacing:.04em; z-index:50; opacity:0; transition:opacity .4s;
+  display:flex; gap:18px;
+}
+#hint.show{opacity:1;}
+#hint kbd{border:1px solid var(--linea); border-radius:4px; padding:1px 6px; font-family:inherit;}
+
+/* ============ TYPE HELPERS ============ */
+.h-xl{font-size:clamp(34px,4.6vw,62px); line-height:1.05;}
+.h-lg{font-size:clamp(22px,2.6vw,36px); line-height:1.14;}
+.h-md{font-size:clamp(18px,1.9vw,24px); line-height:1.2;}
+.p-lg{font-size:16px; line-height:1.58; color:var(--carbon-70); max-width:620px;}
+.p-md{font-size:13.5px; line-height:1.55; color:var(--carbon-70);}
+.mono{font-family:'IBM Plex Mono',monospace;}
+
+/* ============ COVER ============ */
+#scene-cover .scene-inner{display:flex; flex-direction:column; height:78vh; justify-content:space-between;}
+.cover-top{display:flex; justify-content:space-between; align-items:flex-start;}
+.cover-logo img{height:34px; opacity:.92;}
+.cover-tag{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--carbon-45); text-align:right; line-height:1.6;}
+.cover-title{margin-top:auto;}
+.cover-title .eyebrow{margin-bottom:22px;}
+.cover-foot{display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid var(--linea); padding-top:18px;}
+.cover-foot-credit{font-size:12.5px; color:var(--carbon-45);}
+.cover-foot-credit b{color:var(--carbon-70); font-weight:500;}
+.cover-marka img{height:16px; opacity:.9;}
+.invert-logo{filter:invert(1) brightness(1.8);}
+
+/* ============ AGENDA ============ */
+.agenda-list{list-style:none; margin-top:20px; border-top:1px solid var(--linea);}
+.agenda-list li{
+  display:flex; align-items:baseline; gap:24px;
+  padding:13px 0; border-bottom:1px solid var(--linea);
+  cursor:pointer; transition:padding-left .3s var(--ease), color .3s;
+}
+.agenda-list li:hover{padding-left:14px; color:var(--verde-oscuro);}
+.agenda-list .num{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--carbon-45); width:34px;}
+.agenda-list .act{font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--verde-oscuro); width:170px;}
+.agenda-list .title{font-family:'Fraunces',serif; font-size:20px;}
+
+/* ============ TAGS / GRID GENERIC ============ */
+.tag-row{display:flex; flex-wrap:wrap; gap:9px; margin-top:18px;}
+.tag{
+  display:flex; align-items:center; gap:8px;
+  border:1px solid var(--linea); border-radius:100px;
+  padding:9px 16px; font-size:13.5px; background:var(--papel-2);
+}
+.tag .dot{width:6px; height:6px; border-radius:50%; background:var(--verde);}
+
+.step-row{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:22px;}
+.step-card{border-top:2px solid var(--verde); padding-top:16px;}
+.step-card .n{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--verde-oscuro);}
+.step-card h3{font-size:17px; margin:10px 0 8px; font-weight:500;}
+.step-card p{font-size:13.5px; color:var(--carbon-70); line-height:1.55;}
+
+/* ============ MAP SCENE ============ */
+.map-wrap{display:grid; grid-template-columns:1fr 220px; gap:36px; align-items:center;}
+#map-leaflet{width:100%; height:60vh; border-radius:16px; overflow:hidden; border:1px solid var(--linea); background:var(--papel-2);}
+.leaflet-popup-content-wrapper, .leaflet-popup-tip{background:var(--papel-2); color:var(--carbon); box-shadow:none; border:1px solid var(--linea);}
+.leaflet-popup-content{font-family:'Inter',sans-serif; font-size:13px; margin:10px 12px;}
+.leaflet-popup-content b{font-family:'Fraunces',serif; font-weight:500; font-size:14px;}
+.leaflet-container a.leaflet-popup-close-button{color:var(--carbon-45);}
+.leaflet-control-zoom a{background:var(--papel-2) !important; color:var(--carbon) !important; border-color:var(--linea) !important;}
+.leaflet-control-attribution{background:rgba(21,19,15,.7) !important; color:var(--carbon-45) !important; font-size:9.5px !important;}
+.leaflet-control-attribution a{color:var(--carbon-45) !important;}
+.map-side .stat{border-bottom:1px solid var(--linea); padding:12px 0;}
+.map-side .stat .num{font-family:'Fraunces',serif; font-size:28px;}
+.map-side .stat .lbl{font-size:11.5px; color:var(--carbon-45);}
+
+/* ============ COMPANY GRID ============ */
+.company-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:20px;}
+.company-card{
+  border:1px solid var(--linea); border-radius:var(--radius-card); background:var(--papel-2);
+  padding:12px; cursor:pointer; transition:border-color .25s, transform .25s;
+}
+.company-card:hover{border-color:var(--verde); transform:translateY(-3px);}
+.company-card .thumb{
+  height:56px; border-radius:8px; margin-bottom:14px;
+  background:linear-gradient(135deg,var(--verde-tint),var(--papel-2));
+  display:flex; align-items:center; justify-content:center;
+  font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--verde-oscuro); text-transform:uppercase; letter-spacing:.05em;
+}
+.company-card h4{font-size:13.5px; font-weight:500; margin-bottom:2px;}
+.company-card .zone{font-size:12px; color:var(--carbon-45);}
+
+/* ============ COMPANY OVERLAY (FICHA) ============ */
+#overlay{
+  position:fixed; inset:0; z-index:100; background:var(--papel);
+  display:flex; opacity:0; visibility:hidden; transform:scale(.97);
+  transition:opacity .4s var(--ease), transform .4s var(--ease), visibility 0s linear .4s;
+}
+#overlay.open{opacity:1; visibility:visible; transform:scale(1); transition:opacity .4s var(--ease), transform .4s var(--ease), visibility 0s;}
+.ov-close{position:absolute; top:26px; right:9vw; z-index:5; background:none; border:1px solid var(--linea); border-radius:50%; width:38px; height:38px; font-size:16px; color:var(--carbon-70);}
+.ov-close:hover{border-color:var(--verde);}
+.ov-gallery{width:46%; background:var(--gallery-bg); position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden;}
+.ov-photo{
+  width:100%; height:100%; position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px;
+  background:linear-gradient(160deg,#1c1a19,#2f2b29);
+  color:rgba(255,255,255,.55); opacity:0; transition:opacity .4s;
+  font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.05em; text-transform:uppercase;
+}
+.ov-photo.show{opacity:1;}
+.ov-photo svg{width:46px; height:46px; opacity:.5;}
+.ov-photo img{width:100%; height:100%; object-fit:cover; display:block;}
+.ov-dots{position:absolute; bottom:26px; left:50%; transform:translateX(-50%); display:flex; gap:7px; z-index:3;}
+.ov-dots span{width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.35);}
+.ov-dots span.on{background:#fff;}
+.ov-nav{position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,.1); border:none; color:#fff; width:38px; height:38px; border-radius:50%; font-size:15px; z-index:3;}
+.ov-nav.prev{left:20px;} .ov-nav.next{right:20px;}
+.ov-body{width:54%; padding:8vh 5vw; overflow-y:auto;}
+.ov-body::-webkit-scrollbar{display:none;}
+.ov-body h2{font-size:32px; margin-bottom:6px;}
+.ov-zone{font-size:13px; color:var(--carbon-45); margin-bottom:28px;}
+.ov-stats{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:22px;}
+.ov-stat{border:1px solid var(--linea); border-radius:10px; padding:14px 16px;}
+.ov-stat .lbl{font-size:11px; color:var(--carbon-45); text-transform:uppercase; letter-spacing:.04em; font-family:'IBM Plex Mono',monospace;}
+.ov-stat .val{font-family:'Fraunces',serif; font-size:22px; margin-top:4px;}
+.ov-block{margin-bottom:18px;}
+.ov-block h4{font-size:12.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--carbon-45); font-family:'IBM Plex Mono',monospace; margin-bottom:10px;}
+.ov-block p{font-size:14.5px; line-height:1.6; color:var(--carbon-70);}
+.chip-row{display:flex; flex-wrap:wrap; gap:8px;}
+.chip{border-radius:100px; padding:6px 13px; font-size:12.5px;}
+.chip.pos{background:var(--verde-tint); color:var(--verde-oscuro);}
+.chip.neg{background:var(--terracota-tint); color:var(--terracota);}
+.visit-card{border:1px solid var(--linea); border-radius:12px; padding:16px 18px; margin-bottom:14px; background:var(--papel-2);}
+.visit-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;}
+.visit-head .who{font-size:14px; font-weight:500;}
+.visit-head .when{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--carbon-45);}
+.visit-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px 16px; margin-bottom:10px;}
+.visit-grid .f{font-size:12.5px;}
+.visit-grid .f .k{color:var(--carbon-45); font-size:11px; text-transform:uppercase; letter-spacing:.03em; font-family:'IBM Plex Mono',monospace; display:block; margin-bottom:2px;}
+.visit-quote{font-family:'Fraunces',serif; font-style:italic; font-size:13.5px; line-height:1.55; color:var(--carbon-70); border-left:2px solid var(--verde); padding-left:12px; margin-top:8px;}
+.no-photos-note{position:absolute; top:26px; left:26px; z-index:3; font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:rgba(255,255,255,.5); background:rgba(255,255,255,.08); padding:5px 10px; border-radius:100px;}
+
+/* ============ COMPARISON ============ */
+.compare-rows{margin-top:20px; display:flex; flex-direction:column; gap:16px;}
+.compare-row .lbl-row{display:flex; justify-content:space-between; font-size:13px; color:var(--carbon-70); margin-bottom:8px;}
+.compare-track{display:flex; flex-direction:column; gap:8px;}
+.compare-bar-wrap{display:flex; align-items:center; gap:14px;}
+.compare-bar-wrap .name{width:150px; font-size:13px; flex-shrink:0;}
+.compare-bar-bg{flex:1; height:8px; background:var(--papel-2); border-radius:5px; overflow:hidden;}
+.compare-bar-fill{height:100%; background:var(--verde); border-radius:5px; transition:width 1s var(--ease);}
+.compare-bar-wrap .val{width:34px; text-align:right; font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--carbon-45);}
+
+/* ============ BENCHMARK SCATTER ============ */
+.scatter-wrap{
+  position:relative; margin-top:22px; height:360px;
+  border:1px solid rgba(255,255,255,.22); border-radius:12px; background:var(--papel-2);
+  background-image:
+    repeating-linear-gradient(to right, rgba(255,255,255,.07) 0, rgba(255,255,255,.07) 1px, transparent 1px, transparent 20%),
+    repeating-linear-gradient(to bottom, rgba(255,255,255,.07) 0, rgba(255,255,255,.07) 1px, transparent 1px, transparent 20%);
+}
+.scatter-dot{
+  position:absolute; width:11px; height:11px; border-radius:50%; background:var(--verde);
+  transform:translate(-50%,50%); cursor:pointer; transition:transform .2s;
+  border:2px solid var(--papel);
+}
+.scatter-dot:hover{transform:translate(-50%,50%) scale(1.4);}
+.scatter-label{position:absolute; font-size:11px; color:var(--carbon-45); transform:translate(-50%, calc(50% + 12px));}
+.axis-label{position:absolute; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--carbon-45); text-transform:uppercase; letter-spacing:.05em;}
+.axis-label.x{bottom:-32px; right:0;}
+.axis-label.y{top:-24px; left:0; writing-mode:horizontal-tb;}
+
+/* ============ JOURNEY ============ */
+.journey-track{display:flex; margin-top:28px; position:relative;}
+.journey-track::before{content:''; position:absolute; top:20px; left:0; right:0; height:1px; background:var(--linea);}
+.journey-stage{flex:1; position:relative; cursor:pointer; padding-top:36px;}
+.journey-stage .pip{position:absolute; top:14px; left:0; width:13px; height:13px; border-radius:50%; background:#fff; border:2px solid var(--linea); transition:.3s;}
+.journey-stage.on .pip{background:var(--verde); border-color:var(--verde);}
+.journey-stage h4{font-size:14.5px; margin-bottom:6px;}
+.journey-stage .sub{font-size:12px; color:var(--carbon-45);}
+.journey-detail{margin-top:22px; padding-top:18px; border-top:1px solid var(--linea); max-width:680px; min-height:70px;}
+.journey-detail p{font-size:14.5px; line-height:1.65; color:var(--carbon-70);}
+
+/* ============ FODA CARDS ============ */
+.foda-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:20px;}
+.foda-card{border-radius:var(--radius-card); padding:18px; border:1px solid var(--linea);}
+.foda-card.pos{background:var(--verde-tint); border-color:transparent;}
+.foda-card.neg{background:var(--terracota-tint); border-color:transparent;}
+.foda-card.opp{background:var(--ambar-tint); border-color:transparent;}
+.foda-card .k{font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.05em; opacity:.65; margin-bottom:10px;}
+.foda-card h4{font-size:16.5px; margin-bottom:8px;}
+.foda-card p{font-size:13.5px; line-height:1.55; color:var(--carbon-70);}
+
+/* ============ INSIGHTS ============ */
+.insight-list{margin-top:16px; display:flex; flex-direction:column;}
+.insight-item{display:flex; gap:22px; padding:16px 0; border-bottom:1px solid var(--linea);}
+.insight-item .n{font-family:'Fraunces',serif; font-size:26px; color:var(--verde); width:50px; flex-shrink:0;}
+.insight-item p{font-size:16px; line-height:1.6; max-width:680px;}
+
+/* ============ MATRIX (recommendations) ============ */
+.matrix-wrap{display:grid; grid-template-columns:1fr 1fr; gap:36px; margin-top:20px; align-items:start;}
+.matrix{position:relative; height:280px; border:1px solid rgba(255,255,255,.22); border-radius:12px; background:var(--papel-2);}
+.matrix::before,.matrix::after{content:''; position:absolute; background:rgba(255,255,255,.18);}
+.matrix::before{left:50%; top:0; bottom:0; width:1px;}
+.matrix::after{top:50%; left:0; right:0; height:1px;}
+.matrix-item{position:absolute; width:12px; height:12px; border-radius:50%; background:var(--verde); border:2px solid var(--papel); transform:translate(-50%,50%); cursor:pointer;}
+.matrix-q-label{position:absolute; font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--carbon-45); text-transform:uppercase; letter-spacing:.04em;}
+.rec-list{list-style:none; display:flex; flex-direction:column; gap:16px;}
+.rec-list li{border-left:2px solid var(--verde); padding:4px 0 4px 18px;}
+.rec-list .rn{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--carbon-45);}
+.rec-list h4{font-size:15.5px; margin:4px 0 4px; font-weight:500;}
+.rec-list p{font-size:13px; color:var(--carbon-70); line-height:1.5;}
+
+/* ============ EJE TRANSVERSAL / TABLAS EJECUTIVAS ============ */
+.status-pill{display:inline-flex; align-items:center; gap:6px; font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; padding:3px 9px; border-radius:20px; border:1px solid var(--linea);}
+.status-pill.ok{color:var(--verde); border-color:var(--verde);}
+.status-pill.warn{color:var(--ambar,#C9932F); border-color:var(--ambar,#C9932F);}
+.status-pill.pending{color:var(--carbon-45); border-color:var(--linea);}
+.exec-table{width:100%; border-collapse:collapse; margin-top:18px; font-size:13.5px;}
+.exec-table th{text-align:left; font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--carbon-45); font-weight:500; padding:10px 14px; border-bottom:1px solid var(--linea);}
+.exec-table td{padding:12px 14px; border-bottom:1px solid var(--linea); vertical-align:top; color:var(--carbon-70);}
+.exec-table td:first-child, .exec-table th:first-child{color:var(--carbon); font-weight:500;}
+.exec-table tr:last-child td{border-bottom:none;}
+.exec-table tbody tr:hover{background:var(--papel-2);}
+.provider-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:20px;}
+.provider-card{border:1px solid var(--linea); border-radius:var(--radius-card); padding:20px; background:var(--papel-2);}
+.provider-card h4{font-size:16.5px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:10px;}
+.provider-card ul{list-style:none; display:flex; flex-direction:column; gap:9px;}
+.provider-card li{font-size:13.5px; color:var(--carbon-70); line-height:1.5; padding-left:14px; position:relative;}
+.provider-card li::before{content:'—'; position:absolute; left:0; color:var(--carbon-45);}
+.evidence-note{margin-top:16px; padding:14px 16px; border:1px dashed var(--linea); border-radius:10px; font-size:12.5px; color:var(--carbon-45); line-height:1.55;}
+
+/* ============ CLOSING ============ */
+#scene-conclusiones .scene-inner{text-align:left;}
+.close-quote{font-family:'Fraunces',serif; font-size:clamp(28px,3.2vw,42px); line-height:1.28; max-width:820px; margin:26px 0 60px;}
+.close-foot{display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--linea); padding-top:24px;}
+.close-logos{display:flex; align-items:center; gap:22px;}
+.close-logos img{height:22px; opacity:.85;}
+.close-logos .x{color:var(--carbon-45); font-size:14px;}
+
+/* ============ OVERVIEW GRID ============ */
+#overview{
+  position:fixed; inset:0; z-index:90; background:var(--papel);
+  opacity:0; visibility:hidden; transition:opacity .35s, visibility 0s linear .35s;
+  padding:8vh 9vw; overflow-y:auto;
+}
+#overview.open{opacity:1; visibility:visible; transition:opacity .35s;}
+.overview-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:40px;}
+.overview-card{border:1px solid var(--linea); border-radius:12px; padding:18px; cursor:pointer; background:var(--papel-2); transition:border-color .2s;}
+.overview-card:hover{border-color:var(--verde);}
+.overview-card .n{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--verde-oscuro);}
+.overview-card h4{font-size:15px; margin-top:8px; font-weight:500;}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:900px){
+  .scene{padding:10vh 6vw;}
+  .company-grid{grid-template-columns:repeat(2,1fr);}
+  .foda-grid, .step-row{grid-template-columns:1fr 1fr;}
+  .map-wrap, .matrix-wrap{grid-template-columns:1fr;}
+  .overview-grid{grid-template-columns:repeat(2,1fr);}
+  #overlay.open{flex-direction:column;}
+  .ov-gallery, .ov-body{width:100%;}
+  .ov-gallery{height:38vh;}
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{transition-duration:.01ms !important; animation-duration:.01ms !important;}
+}
+</style>
+</head>
+<body>
+
+<div id="chrome">
+  <div id="progress-track"><div id="progress-fill"></div></div>
+  <div id="chrome-row">
+    <span id="act-label"></span>
+    <span id="scene-counter"></span>
+  </div>
+</div>
+<div class="navzone" id="navzone-prev" title="Anterior"></div>
+<div class="navzone" id="navzone-next" title="Siguiente"></div>
+<div id="hint"><span><kbd>&larr;</kbd> <kbd>&rarr;</kbd> avanzar</span><span><kbd>O</kbd> vista general</span></div>
+
+<main id="deck">
+
+  <!-- 1. PORTADA -->
+  <section class="scene" id="scene-cover" data-act="">
+    <div class="scene-inner">
+      <div class="cover-top">
+        <div class="cover-logo"><img src="data:image/png;base64,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" alt="Envaco"></div>
+        <div class="cover-tag">Informe confidencial<br>Julio 2026</div>
+      </div>
+      <div class="cover-title">
+        <div class="eyebrow">Estudio de mercado · Mystery shopper</div>
+        <h1 class="h-xl">Cómo compite<br>Envaco POP hoy.</h1>
+        <p class="p-lg" style="margin-top:16px;">Un relevamiento directo de la experiencia comercial en empresas de soluciones POP, packaging y exhibidores — para entender dónde está parada Envaco frente al mercado.</p>
+      </div>
+      <div class="cover-foot">
+        <div class="cover-foot-credit">Estudio realizado por <b>+Marka</b> para Envaco POP</div>
+        <div class="cover-marka"><span class="mono" style="font-size:12px; letter-spacing:.06em; color:var(--carbon-45); opacity:.9;">+MARKA</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. AGENDA -->
+  <section class="scene" id="scene-agenda" data-act="Contexto">
+    <div class="scene-inner">
+      <div class="eyebrow">Agenda</div>
+      <h2 class="h-lg" style="margin-top:11px;">El recorrido de hoy.</h2>
+      <ul class="agenda-list" id="agenda-list"></ul>
+    </div>
+  </section>
+
+  <!-- 3. OBJETIVO -->
+  <section class="scene" id="scene-objetivo" data-act="Contexto">
+    <div class="scene-inner">
+      <div class="eyebrow">Objetivo del estudio</div>
+      <h2 class="h-lg" style="margin-top:11px; max-width:760px;">Entender, de primera mano, cómo vive un cliente el proceso comercial de la competencia.</h2>
+      <p class="p-lg" style="margin-top:10px;">Se evaluaron nueve dimensiones clave del proceso comercial, replicando el recorrido real de un cliente que solicita una cotización.</p>
+      <div class="tag-row" id="dimensiones-tags"></div>
+    </div>
+  </section>
+
+  <!-- 4. METODOLOGIA -->
+  <section class="scene" id="scene-metodologia" data-act="Contexto">
+    <div class="scene-inner">
+      <div class="eyebrow">Metodología</div>
+      <h2 class="h-lg" style="margin-top:11px;">Cuatro pasos, un mismo criterio para todas las empresas.</h2>
+      <div class="step-row" id="metodologia-steps"></div>
+    </div>
+  </section>
+
+  <!-- 5. COBERTURA GEOGRAFICA / MAPA -->
+  <section class="scene" id="scene-mapa" data-act="Relevamiento">
+    <div class="scene-inner">
+      <div class="eyebrow">Cobertura geográfica</div>
+      <h2 class="h-lg" style="margin-top:11px;">Dónde relevamos — mapa de calor por densidad de locales.</h2>
+      <p class="p-md" style="margin-top:8px; max-width:640px;">La intensidad del color muestra dónde se concentra más actividad de campo relevada; los puntos verdes son clickeables y abren la ficha de cada empresa.</p>
+      <div class="map-wrap">
+        <div id="map-leaflet"></div>
+        <div class="map-side" id="map-stats"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. EMPRESAS RELEVADAS -->
+  <section class="scene" id="scene-empresas" data-act="Relevamiento · Visitas presenciales">
+    <div class="scene-inner">
+      <div class="eyebrow">Empresas relevadas</div>
+      <h2 class="h-lg" style="margin-top:11px;">El universo competitivo.</h2>
+      <p class="p-md" style="margin-top:8px; max-width:640px;">Clic sobre cualquier empresa para abrir su ficha completa.</p>
+      <div class="company-grid" id="company-grid"></div>
+    </div>
+  </section>
+
+  <!-- 7. FICHA INDIVIDUAL (intro) -->
+  <section class="scene" id="scene-ficha" data-act="Relevamiento · Visitas presenciales">
+    <div class="scene-inner">
+      <div class="eyebrow">Ficha individual</div>
+      <h2 class="h-lg" style="margin-top:11px; max-width:700px;">Cada empresa relevada tiene su propia ficha: fotos, tiempos, cotización y observaciones de campo.</h2>
+      <p class="p-lg" style="margin-top:13px;">Así se ve una ficha completa —</p>
+      <button class="tag" style="margin-top:22px; border-color:var(--verde); color:var(--verde-oscuro);" onclick="openCompany('toddo')">Ver ficha de ejemplo →</button>
+    </div>
+  </section>
+
+  <!-- 7B. EJE TRANSVERSAL (pilar 1: aplica a todas las fichas) -->
+  <section class="scene" id="scene-ejetransversal" data-act="Relevamiento · Visitas presenciales">
+    <div class="scene-inner">
+      <div class="eyebrow">Eje transversal por proveedor</div>
+      <h2 class="h-lg" style="margin-top:11px; max-width:760px;">Ubicación, sucursales, atención y flexibilidad horaria — el mismo criterio para todos.</h2>
+      <p class="p-md" style="margin-top:8px; max-width:680px;">Cuatro variables evaluadas en todas las visitas: si la ubicación declarada en redes es la actual, cantidad de sucursales, calidad de atención al cliente, y si el canal digital deriva directo a WhatsApp y con qué flexibilidad horaria.</p>
+      <div style="overflow-x:auto; margin-top:8px;">
+        <table class="exec-table">
+          <thead><tr><th>Proveedor</th><th>Ubicación declarada</th><th>Sucursales</th><th>Calidad de ATC</th><th>Flujo de servicio</th><th>Horario / flexibilidad</th></tr></thead>
+          <tbody id="eje-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7C. COMPARATIVA DIGITAL (pilar 2) -->
+  <section class="scene" id="scene-digital" data-act="Relevamiento · Canales digitales">
+    <div class="scene-inner">
+      <div class="eyebrow">Comparativa digital</div>
+      <h2 class="h-lg" style="margin-top:11px; max-width:700px;">SEO, bots de WhatsApp y errores de contacto.</h2>
+      <div class="foda-grid" id="digital-grid" style="grid-template-columns:repeat(2,1fr);"></div>
+    </div>
+  </section>
+
+  <!-- 7D. COMPARACIÓN DE PÁGINAS WEB -->
+  <section class="scene" id="scene-webcompare" data-act="Relevamiento · Canales digitales">
+    <div class="scene-inner">
+      <div class="eyebrow">Comparación de páginas web</div>
+      <h2 class="h-lg" style="margin-top:11px; max-width:700px;">Envaco vs. Yaguareté: facilidad para conseguir información.</h2>
+      <p class="p-md" style="margin-top:8px; max-width:680px;">Fuente: Informe RRSS Envaco vs. Yaguareté (Más Marka Plus, revisión pública al 19/07/2026). Escala cualitativa según evidencia pública observable.</p>
+      <div style="overflow-x:auto; margin-top:8px;">
+        <table class="exec-table">
+          <thead><tr><th>Criterio</th><th>Envaco</th><th>Yaguareté</th><th>Ventaja</th></tr></thead>
+          <tbody id="webcompare-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7E. REDES SOCIALES: ENVACO VS. YAGUARETÉ (pilar 3) -->
+  <section class="scene" id="scene-redes" data-act="Relevamiento · Redes sociales">
+    <div class="scene-inner">
+      <div class="eyebrow">Auditoría de redes sociales</div>
+      <h2 class="h-lg" style="margin-top:11px; max-width:700px;">Envaco vs. Yaguareté — la sección que faltaba en el reporte preliminar.</h2>
+      <p class="p-md" style="margin-top:8px; max-width:680px;">Escala técnica 1 (bajo) a 5 (alto), sobre activos y recorridos públicos observables — no sobre métricas internas de rendimiento.</p>
+      <div style="overflow-x:auto; margin-top:8px;">
+        <table class="exec-table">
+          <thead><tr><th>Dimensión</th><th>Envaco</th><th>Yaguareté</th><th>Liderazgo</th></tr></thead>
+          <tbody id="redes-table-body"></tbody>
+        </table>
+      </div>
+      <div class="evidence-note" id="redes-pauta-note"></div>
+    </div>
+  </section>
+
+  <!-- 7F. CARTELERÍA E INFRAESTRUCTURA (pilar 4) -->
+  <section class="scene" id="scene-infraestructura" data-act="Relevamiento · Infraestructura">
+    <div class="scene-inner">
+      <div class="eyebrow">Cartelería e infraestructura en locales</div>
+      <h2 class="h-lg" style="margin-top:11px; max-width:700px;">Envaco vs. Yaguareté: visibilidad exterior y modelo de exhibición.</h2>
+      <div class="provider-grid" id="infra-grid"></div>
+    </div>
+  </section>
+
+  <!-- 7G. POLÍTICAS COMERCIALES Y FIDELIZACIÓN (pilar 5) -->
+  <section class="scene" id="scene-politicas" data-act="Relevamiento · Políticas comerciales">
+    <div class="scene-inner">
+      <div class="eyebrow">Políticas comerciales y ventas</div>
+      <h2 class="h-lg" style="margin-top:11px; max-width:700px;">Esfuerzo de cierre y fidelización por recurrencia.</h2>
+      <div class="foda-grid" id="politicas-grid" style="grid-template-columns:repeat(3,1fr);"></div>
+    </div>
+  </section>
+
+  <!-- 7H. PLACEHOLDER COMPARATIVA DE PRECIOS -->
+  <section class="scene" id="scene-precios" data-act="Análisis">
+    <div class="scene-inner" style="display:flex; flex-direction:column; justify-content:center; height:70vh; text-align:center; align-items:center;">
+      <div class="eyebrow">Comparativa de precios</div>
+      <h2 class="h-lg" style="margin-top:16px; max-width:640px;">El viernes vamos a tener la comparativa de precios.</h2>
+      <span class="status-pill pending" style="margin-top:18px;">Pendiente</span>
+    </div>
+  </section>
+
+  <!-- 8. COMPARATIVA -->
+  <section class="scene" id="scene-comparativa" data-act="Análisis">
+    <div class="scene-inner">
+      <div class="eyebrow">Comparativa entre empresas</div>
+      <h2 class="h-lg" style="margin-top:11px;">Cómo se ordena el mercado.</h2>
+      <p class="p-md" style="margin-top:8px; max-width:640px;">El índice de atención es una estimación propia que combina proactividad, trato, información de precios y tiempo de espera en cada visita — a validar en conjunto con Envaco.</p>
+      <div class="compare-rows" id="compare-rows"></div>
+    </div>
+  </section>
+
+  <!-- 9. BENCHMARK -->
+  <section class="scene" id="scene-benchmark" data-act="Análisis">
+    <div class="scene-inner">
+      <div class="eyebrow">Benchmark competitivo</div>
+      <h2 class="h-lg" style="margin-top:11px;">Tiempo de respuesta vs. calidad de atención.</h2>
+      <div class="scatter-wrap" id="scatter-wrap">
+        <span class="axis-label x">Tiempo de espera en el local (min) →</span>
+        <span class="axis-label y">↑ Calidad de atención</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. CUSTOMER JOURNEY -->
+  <section class="scene" id="scene-journey" data-act="Análisis">
+    <div class="scene-inner">
+      <div class="eyebrow">Customer journey</div>
+      <h2 class="h-lg" style="margin-top:11px;">El recorrido típico de un cliente que cotiza.</h2>
+      <div class="journey-track" id="journey-track"></div>
+      <div class="journey-detail" id="journey-detail"></div>
+    </div>
+  </section>
+
+  <!-- 11. FORTALEZAS -->
+  <section class="scene" id="scene-fortalezas" data-act="Análisis">
+    <div class="scene-inner">
+      <div class="eyebrow">Fortalezas del mercado</div>
+      <h2 class="h-lg" style="margin-top:11px;">Lo que la competencia hace bien.</h2>
+      <div class="foda-grid" id="fortalezas-grid"></div>
+    </div>
+  </section>
+
+  <!-- 12. DEBILIDADES -->
+  <section class="scene" id="scene-debilidades" data-act="Análisis">
+    <div class="scene-inner">
+      <div class="eyebrow">Debilidades del mercado</div>
+      <h2 class="h-lg" style="margin-top:11px;">Dónde la competencia falla.</h2>
+      <div class="foda-grid" id="debilidades-grid"></div>
+    </div>
+  </section>
+
+  <!-- 13. INSIGHTS -->
+  <section class="scene" id="scene-insights" data-act="Análisis">
+    <div class="scene-inner">
+      <div class="eyebrow">Insights</div>
+      <h2 class="h-lg" style="margin-top:11px;">Lo que estos datos realmente significan.</h2>
+      <div class="insight-list" id="insight-list"></div>
+    </div>
+  </section>
+
+  <!-- 14. OPORTUNIDADES -->
+  <section class="scene" id="scene-oportunidades" data-act="Recomendaciones">
+    <div class="scene-inner">
+      <div class="eyebrow">Oportunidades para Envaco</div>
+      <h2 class="h-lg" style="margin-top:11px;">Los espacios que Envaco puede ocupar.</h2>
+      <div class="foda-grid" id="oportunidades-grid"></div>
+    </div>
+  </section>
+
+  <!-- 15. RECOMENDACIONES -->
+  <section class="scene" id="scene-recomendaciones" data-act="Recomendaciones">
+    <div class="scene-inner">
+      <div class="eyebrow">Recomendaciones</div>
+      <h2 class="h-lg" style="margin-top:11px;">Impacto vs. esfuerzo de implementación.</h2>
+      <div class="matrix-wrap">
+        <div class="matrix" id="rec-matrix"></div>
+        <ul class="rec-list" id="rec-list"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 16. CONCLUSIONES -->
+  <section class="scene" id="scene-conclusiones" data-act="Recomendaciones">
+    <div class="scene-inner">
+      <div class="eyebrow">Conclusiones</div>
+      <p class="close-quote">El mercado de soluciones POP compite hoy más por tiempo de respuesta y trato que por precio. Ahí está la oportunidad más clara para Envaco.</p>
+      <div class="close-foot">
+        <div class="p-md" style="max-width:480px;">Próximo paso: revisar estas recomendaciones en conjunto y priorizar un plan de acción a 90 días.</div>
+        <div class="close-logos">
+          <span class="mono" style="font-size:12px; letter-spacing:.04em; color:var(--carbon-70); opacity:.85;">ENVACO</span>
+          <span class="x">×</span>
+          <span class="mono" style="font-size:12px; letter-spacing:.04em; color:var(--carbon-45); opacity:.85;">+MARKA</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 17. CONSOLIDADO DE EVIDENCIA: FOTOS PRESENCIALES -->
+  <section class="scene" id="scene-evidenciafotos" data-act="Anexo">
+    <div class="scene-inner">
+      <div class="eyebrow">Consolidado de evidencia</div>
+      <h2 class="h-lg" style="margin-top:11px; max-width:700px;">Fotos presenciales — control de material multimedia registrado en campo.</h2>
+      <div style="overflow-x:auto; margin-top:8px;">
+        <table class="exec-table">
+          <thead><tr><th>Empresa / sucursal visitada</th><th>Tipo de relevamiento</th><th>Cantidad de fotos</th></tr></thead>
+          <tbody id="evidencia-fotos-body"></tbody>
+        </table>
+      </div>
+      <p class="p-md" style="margin-top:16px;">Total fotos presenciales: <b id="evidencia-fotos-total" style="color:var(--verde-oscuro);"></b></p>
+    </div>
+  </section>
+
+  <!-- 18. CONSOLIDADO DE EVIDENCIA: CAPTURAS DE WHATSAPP -->
+  <section class="scene" id="scene-evidenciawhatsapp" data-act="Anexo">
+    <div class="scene-inner">
+      <div class="eyebrow">Consolidado de evidencia</div>
+      <h2 class="h-lg" style="margin-top:11px; max-width:700px;">Interacciones digitales — capturas de pantalla y catálogos de WhatsApp.</h2>
+      <div style="overflow-x:auto; margin-top:8px;">
+        <table class="exec-table">
+          <thead><tr><th>Empresa / proveedor digital</th><th>Tipo de relevamiento</th><th>Cantidad de capturas</th></tr></thead>
+          <tbody id="evidencia-whatsapp-body"></tbody>
+        </table>
+      </div>
+      <p class="p-md" style="margin-top:16px;">Total capturas WhatsApp: <b id="evidencia-whatsapp-total" style="color:var(--verde-oscuro);"></b></p>
+      <div class="evidence-note">Espacios reservados para pegar las capturas manualmente — no se incluyen imágenes en este entregable.</div>
+    </div>
+  </section>
+
+</main>
+
+<!-- OVERVIEW -->
+<div id="overview">
+  <div class="eyebrow">Vista general</div>
+  <h2 class="h-lg" style="margin-top:10px;">Saltar a cualquier sección.</h2>
+  <div class="overview-grid" id="overview-grid"></div>
+</div>
+
+<!-- COMPANY OVERLAY -->
+<div id="overlay">
+  <button class="ov-close" onclick="closeCompany()">✕</button>
+  <div class="ov-gallery" id="ov-gallery">
+    <div class="ov-dots" id="ov-dots"></div>
+    <button class="ov-nav prev" onclick="ovPhoto(-1)">‹</button>
+    <button class="ov-nav next" onclick="ovPhoto(1)">›</button>
+  </div>
+  <div class="ov-body" id="ov-body"></div>
+</div>
+
+<script>
+/* ======================================================================
+   DATOS — companies: cada empresa con sus visitas de mystery shopper y
+   sus fotos reales (rutas relativas a la carpeta "VISITA PRESENCIAL").
+   ====================================================================== */
+const companies = [
+  {
+    "id": "yaguarete-espana",
+    "nombre": "Cartones Yaguareté",
+    "sucursal": "España (Av. España, Centro)",
+    "zona": "Gran Asunción",
+    "rubro": "Cartonería / packaging",
+    "visitas": [
+      {
+        "shopper": "Ricardo",
+        "fecha": "2026-07-06",
+        "canal": "Presencial",
+        "atendio": "Enrique Avalos",
+        "tiempo_min": 1,
+        "tiempo_txt": "Inmediata",
+        "proactivo": 2,
+        "trato": "Muy bien, con ganas de ayudar",
+        "trato_score": 2,
+        "precios": "Sí (parcial)",
+        "precios_score": 1,
+        "precios_txt": "P. bruto Gs. 1.800 · x50u 1.700 · x100u 1.600 · x500u 1.500",
+        "productos": "Cajas estándar, bolsas de papel, cajas con diseño, terminación brillante/laminada, cartonplast, material para eventos, a medida",
+        "plazo": "1 día (minorista, con impresión)",
+        "envios": "Solo retiro en local",
+        "obs": "Fue una buena experiencia. Hasta ahora no encontré ningún inconveniente.",
+        "indice": 87.5
+      },
+      {
+        "shopper": "Raúl",
+        "fecha": "2026-07-08",
+        "canal": "Presencial",
+        "atendio": "Stiven",
+        "tiempo_min": null,
+        "tiempo_txt": "No especificado",
+        "proactivo": 1,
+        "trato": "Bien pero sin mucho interés",
+        "trato_score": 1,
+        "precios": "Sí",
+        "precios_score": 2,
+        "precios_txt": "Lista amplia por producto y escala (bolsas, cajas frutihortícolas, etc.)",
+        "productos": "Cajas estándar, bolsas de papel, cajas con diseño, a medida",
+        "plazo": "No especificado",
+        "envios": "Hacen envíos",
+        "obs": "El señor no se paró para atenderme, solo me dijo en qué pasillo estaban las cajas; me dio la tarjeta de una diseñadora.",
+        "indice": 62.5
+      }
+    ],
+    "indice_atencion": 75.0,
+    "tiempo_min": 1.0,
+    "fotos": [
+      "VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.31%20(1).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.31%20(2).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.31.jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.32%20(1).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.32%20(2).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.32.jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.33%20(1).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.33.jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.34%20(1).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.34.jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-17%20at%2013.45.58%20(1).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-17%20at%2013.45.58%20(2).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-17%20at%2013.45.58%20(3).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-17%20at%2013.45.58.jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-17%20at%2013.45.59%20(1).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-17%20at%2013.45.59%20(2).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-17%20at%2013.45.59.jpeg"
+    ]
+  },
+  {
+    "id": "yaguarete-nemby",
+    "nombre": "Cartones Yaguareté",
+    "sucursal": "Ñemby (T5, Acceso Norte)",
+    "zona": "Gran Asunción",
+    "rubro": "Cartonería / packaging",
+    "visitas": [
+      {
+        "shopper": "Araceli",
+        "fecha": "2026-07-04",
+        "canal": "Presencial",
+        "atendio": "Jorge",
+        "tiempo_min": 1,
+        "tiempo_txt": "1 minuto en el local",
+        "proactivo": 2,
+        "trato": "Muy bien, con ganas de ayudar",
+        "trato_score": 2,
+        "precios": "Sí",
+        "precios_score": 2,
+        "precios_txt": "Caja frigorífico reforzada Gs. 4.510 (x100u) · escalas hasta Gs. 4.290 (x1.000u)",
+        "productos": "Cajas estándar, bolsas de papel, cajas con diseño, a medida",
+        "plazo": "4 días",
+        "envios": "Hacen envíos",
+        "obs": "El vendedor fue súper amable, tenía todos los datos sin dudar de precios y plazos.",
+        "indice": 100.0
+      },
+      {
+        "shopper": "Cinthia",
+        "fecha": "2026-07-07",
+        "canal": "Presencial",
+        "atendio": "Elisa (venta y recepción)",
+        "tiempo_min": 1,
+        "tiempo_txt": "Inmediata",
+        "proactivo": 1,
+        "trato": "Muy bien, con ganas de ayudar",
+        "trato_score": 2,
+        "precios": "Sí",
+        "precios_score": 2,
+        "precios_txt": "Cajas p/pizza con diseño: 200u por Gs. 585.000",
+        "productos": "Cajas estándar, bolsas de papel, cajas con diseño, material para eventos, a medida, otros",
+        "plazo": "2 días aprox.",
+        "envios": "Variable / a confirmar",
+        "obs": "Local muy bien organizado, fácil encontrar lo que se busca. Lo malo: solo te atienden unos minutos y luego no hay constancia en la atención.",
+        "indice": 87.5
+      }
+    ],
+    "indice_atencion": 93.8,
+    "tiempo_min": 1.0,
+    "fotos": [
+      "VISITA%20PRESENCIAL/YAGUARETE%20%C3%91EMBY/WhatsApp%20Image%202026-07-09%20at%2011.28.36.jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20%C3%91EMBY/2.jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20%C3%91EMBY/WhatsApp%20Image%202026-07-09%20at%2011.28.37%20(1).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20%C3%91EMBY/WhatsApp%20Image%202026-07-09%20at%2011.28.37%20(2).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20%C3%91EMBY/WhatsApp%20Image%202026-07-09%20at%2011.28.37%20(3).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20%C3%91EMBY/WhatsApp%20Image%202026-07-09%20at%2011.28.37.jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20%C3%91EMBY/WhatsApp%20Image%202026-07-09%20at%2011.28.38%20(1).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20%C3%91EMBY/WhatsApp%20Image%202026-07-09%20at%2011.28.38.jpeg"
+    ]
+  },
+  {
+    "id": "yaguarete-mra",
+    "nombre": "Cartones Yaguareté",
+    "sucursal": "MRA",
+    "zona": "Gran Asunción",
+    "rubro": "Cartonería / packaging",
+    "visitas": [
+      {
+        "shopper": "Raúl",
+        "fecha": "2026-07-06",
+        "canal": "Presencial",
+        "atendio": "Luis",
+        "tiempo_min": null,
+        "tiempo_txt": "No especificado",
+        "proactivo": 1,
+        "trato": "Muy bien, con ganas de ayudar",
+        "trato_score": 2,
+        "precios": "Sí",
+        "precios_score": 2,
+        "precios_txt": "Caja chica Gs. 18.500 · mediana Gs. 21.200 · grande Gs. 31.600 (con escalas por volumen)",
+        "productos": "Cajas estándar, a medida",
+        "plazo": "Hasta 10 días (grandes volúmenes)",
+        "envios": "Hacen envíos",
+        "obs": "El vendedor ofreció cintas adhesivas para el cierre de cajas sin tapa: detalle proactivo de post-venta.",
+        "indice": 75.0
+      }
+    ],
+    "indice_atencion": 75.0,
+    "tiempo_min": null,
+    "fotos": [
+      "VISITA%20PRESENCIAL/YAGUARETE%20MRA/WhatsApp%20Image%202026-07-08%20at%2018.56.48.jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20MRA/WhatsApp%20Image%202026-07-08%20at%2018.56.49.jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20MRA/WhatsApp%20Image%202026-07-08%20at%2018.56.50%20(1).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20MRA/WhatsApp%20Image%202026-07-08%20at%2018.56.50%20(2).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20MRA/WhatsApp%20Image%202026-07-08%20at%2018.56.50.jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20MRA/WhatsApp%20Image%202026-07-08%20at%2018.56.51%20(1).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20MRA/WhatsApp%20Image%202026-07-08%20at%2018.56.51%20(2).jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20MRA/WhatsApp%20Image%202026-07-08%20at%2018.56.51.jpeg",
+      "VISITA%20PRESENCIAL/YAGUARETE%20MRA/WhatsApp%20Image%202026-07-08%20at%2018.56.52%20(2).jpeg"
+    ]
+  },
+  {
+    "id": "impress-pdv",
+    "nombre": "Impress PDV",
+    "sucursal": "",
+    "zona": "Gran Asunción",
+    "rubro": "POP / publicidad",
+    "sin_fotos": true,
+    "visitas": [
+      {
+        "shopper": "Cinthia",
+        "fecha": "2026-07-06",
+        "canal": "Presencial",
+        "atendio": "Pamela (recepción)",
+        "tiempo_min": 3,
+        "tiempo_txt": "Rápida, pero sin vendedor disponible en el local",
+        "proactivo": 1,
+        "trato": "Bien pero sin mucho interés",
+        "trato_score": 1,
+        "precios": "No",
+        "precios_score": 1,
+        "precios_txt": "Sin datos concretos; deriva a un vendedor por WhatsApp",
+        "productos": "No especificado",
+        "plazo": "No especificado",
+        "envios": "No especificado",
+        "obs": "La atención presencial es muy apagada, no se acerca nadie a facilitar respuestas; se percibe poco receptiva con compradores pequeños.",
+        "indice": 62.5
+      }
+    ],
+    "indice_atencion": 62.5,
+    "tiempo_min": 3.0,
+    "fotos": []
+  },
+  {
+    "id": "jwf",
+    "nombre": "JWF Group",
+    "sucursal": "",
+    "zona": "Gran Asunción",
+    "rubro": "Stands / material para eventos",
+    "visitas": [
+      {
+        "shopper": "Ricardo",
+        "fecha": "2026-07-07",
+        "canal": "Presencial",
+        "atendio": "Adriana",
+        "tiempo_min": 5,
+        "tiempo_txt": "5 minutos (recepción primero)",
+        "proactivo": 1,
+        "trato": "Muy bien, con ganas de ayudar",
+        "trato_score": 2,
+        "precios": "Más o menos",
+        "precios_score": 1,
+        "precios_txt": "Stand premium Gs. 40-50 M · básico Gs. 10-15 M (sin precio fijo)",
+        "productos": "Material para eventos",
+        "plazo": "12 a 15 días",
+        "envios": "No especificado",
+        "obs": "No trabajan con cartón, solo stands y publicidad de gran porte — el shopper tuvo que improvisar la consulta.",
+        "indice": 75.0
+      },
+      {
+        "shopper": "Raúl",
+        "fecha": "2026-07-08",
+        "canal": "Presencial",
+        "atendio": "Adriana",
+        "tiempo_min": null,
+        "tiempo_txt": "No especificado",
+        "proactivo": 1,
+        "trato": "Bien pero sin mucho interés",
+        "trato_score": 1,
+        "precios": "Sí",
+        "precios_score": 2,
+        "precios_txt": "Estantes cartonplast Gs. 300-450 mil según tamaño/impresión",
+        "productos": "Estantes de cartonplast",
+        "plazo": "1 a 2 semanas",
+        "envios": "Hacen envíos",
+        "obs": "Sin producto exhibido en el local; la información se entregó con reserva.",
+        "indice": 62.5
+      }
+    ],
+    "indice_atencion": 68.8,
+    "tiempo_min": 5.0,
+    "fotos": [
+      "VISITA%20PRESENCIAL/JWF/WhatsApp%20Image%202026-07-09%20at%2016.20.50.jpeg",
+      "VISITA%20PRESENCIAL/JWF/WhatsApp%20Image%202026-07-09%20at%2016.20.50%20(1).jpeg"
+    ]
+  },
+  {
+    "id": "toddo",
+    "nombre": "Toddo Group",
+    "sucursal": "",
+    "zona": "Gran Asunción",
+    "rubro": "Exhibidores / góndolas",
+    "visitas": [
+      {
+        "shopper": "Cinthia",
+        "fecha": "2026-07-07",
+        "canal": "Presencial",
+        "atendio": "Marcos (no es vendedor)",
+        "tiempo_min": 4,
+        "tiempo_txt": "4 minutos",
+        "proactivo": 1,
+        "trato": "Muy bien, con ganas de ayudar",
+        "trato_score": 2,
+        "precios": "No",
+        "precios_score": 0,
+        "precios_txt": "Sin información de precios",
+        "productos": "No especificado (solo exhibidores y góndolas, no cartón)",
+        "plazo": "No especificado",
+        "envios": "No especificado",
+        "obs": "Atendieron 3 personas y ninguna estaba preparada; no hay salón de ventas, toda la venta pasa por una sola persona vía WhatsApp.",
+        "indice": 62.5
+      }
+    ],
+    "indice_atencion": 62.5,
+    "tiempo_min": 4.0,
+    "fotos": [
+      "VISITA%20PRESENCIAL/TODDO%20GROUP/WhatsApp%20Image%202026-07-09%20at%2011.28.39.jpeg",
+      "VISITA%20PRESENCIAL/TODDO%20GROUP/WhatsApp%20Image%202026-07-09%20at%2011.28.40%20(1).jpeg",
+      "VISITA%20PRESENCIAL/TODDO%20GROUP/WhatsApp%20Image%202026-07-09%20at%2011.28.40%20(2).jpeg",
+      "VISITA%20PRESENCIAL/TODDO%20GROUP/WhatsApp%20Image%202026-07-09%20at%2011.28.40.jpeg"
+    ]
+  },
+  {
+    "id": "fc-publicidad",
+    "nombre": "FC Publicidad",
+    "sucursal": "",
+    "zona": "Gran Asunción",
+    "rubro": "Exhibidores / góndolas",
+    "visitas": [
+      {
+        "shopper": "Cinthia",
+        "fecha": "2026-07-07",
+        "canal": "Presencial",
+        "atendio": "Patricia (diseñadora)",
+        "tiempo_min": 1,
+        "tiempo_txt": "1 minuto",
+        "proactivo": 2,
+        "trato": "Muy bien, con ganas de ayudar",
+        "trato_score": 2,
+        "precios": "No",
+        "precios_score": 0,
+        "precios_txt": "Quien atiende no maneja precios (los maneja la dueña)",
+        "productos": "No especificado (solo exhibidores y góndolas, no cartón)",
+        "plazo": "No especificado",
+        "envios": "No especificado",
+        "obs": "Atención cordial y conversadora, pero sin ningún respaldo comercial: precio, tiempo y cantidad dependen de la dueña.",
+        "indice": 75.0
+      }
+    ],
+    "indice_atencion": 75.0,
+    "tiempo_min": 1.0,
+    "fotos": [
+      "VISITA%20PRESENCIAL/FC%20PUBLICIDAD/WhatsApp%20Image%202026-07-09%20at%2011.28.42.jpeg",
+      "VISITA%20PRESENCIAL/FC%20PUBLICIDAD/WhatsApp%20Image%202026-07-09%20at%2011.28.43.jpeg",
+      "VISITA%20PRESENCIAL/FC%20PUBLICIDAD/3.jpeg",
+      "VISITA%20PRESENCIAL/FC%20PUBLICIDAD/4.jpeg",
+      "VISITA%20PRESENCIAL/FC%20PUBLICIDAD/5.jpeg"
+    ]
+  },
+  {
+    "id": "rapid-color",
+    "nombre": "Rapid Color",
+    "sucursal": "",
+    "zona": "Gran Asunción",
+    "rubro": "Impresión / gráfica",
+    "visitas": [
+      {
+        "shopper": "Araceli",
+        "fecha": "2026-07-07",
+        "canal": "Presencial (perfil B2B)",
+        "atendio": "Monserray",
+        "tiempo_min": 3,
+        "tiempo_txt": "3 minutos",
+        "proactivo": 1,
+        "trato": "Muy bien, con ganas de ayudar",
+        "trato_score": 2,
+        "precios": "Más o menos",
+        "precios_score": 1,
+        "precios_txt": "Sin datos concretos relevados",
+        "productos": "No especificado",
+        "plazo": "No especificado",
+        "envios": "Hacen envíos",
+        "obs": "Trato agradable, pero la persona no tenía demasiado conocimiento del producto ni buena recepción del local.",
+        "indice": 75.0
+      }
+    ],
+    "indice_atencion": 75.0,
+    "tiempo_min": 3.0,
+    "fotos": [
+      "VISITA%20PRESENCIAL/RAPID%20COLOR/WhatsApp%20Image%202026-07-09%20at%2011.52.03.jpeg",
+      "VISITA%20PRESENCIAL/RAPID%20COLOR/WhatsApp%20Image%202026-07-09%20at%2011.52.04%20(1).jpeg",
+      "VISITA%20PRESENCIAL/RAPID%20COLOR/WhatsApp%20Image%202026-07-09%20at%2011.52.04.jpeg"
+    ]
+  },
+  {
+    "id": "yaguarete-cde",
+    "nombre": "Cartones Yaguareté",
+    "sucursal": "Ciudad del Este",
+    "zona": "Ciudad del Este",
+    "rubro": "Cartonería / packaging",
+    "sin_fotos": true,
+    "visitas": [
+      {
+        "shopper": "Araceli",
+        "fecha": "2026-07-09",
+        "canal": "Presencial",
+        "atendio": "No especificado",
+        "tiempo_min": null,
+        "tiempo_txt": "No especificado",
+        "proactivo": 2,
+        "trato": "Muy bien, con ganas de ayudar",
+        "trato_score": 2,
+        "precios": "No",
+        "precios_score": 0,
+        "precios_txt": "No se relevaron precios concretos en esta visita",
+        "productos": "Cajas estándar, bolsas de papel, cajas con diseño, a medida, otros artículos de empaque",
+        "plazo": "En una semana",
+        "envios": "No especificado",
+        "obs": "Uno de los mejores locales de Yaguareté en atención: el vendedor sabía de memoria precios, medidas e información sobre impresión y personalización.",
+        "indice": 87.5
+      }
+    ],
+    "indice_atencion": 87.5,
+    "tiempo_min": null,
+    "fotos": []
+  },
+  {
+    "id": "paper-box-hernandarias",
+    "nombre": "Paper Box",
+    "sucursal": "Hernandarias",
+    "zona": "Hernandarias",
+    "rubro": "Cartonería / packaging (mayorista)",
+    "sin_fotos": true,
+    "visitas": [
+      {
+        "shopper": "Ricardo",
+        "fecha": "2026-07-09",
+        "canal": "Presencial (perfil mayorista)",
+        "atendio": "No especificado",
+        "tiempo_min": 5,
+        "tiempo_txt": "5 minutos de espera tras tocar timbre",
+        "proactivo": 0,
+        "trato": "Prepotente, sin atención presencial",
+        "trato_score": 0,
+        "precios": "No",
+        "precios_score": 0,
+        "precios_txt": "No informado en la visita",
+        "productos": "No especificado",
+        "plazo": "No especificado",
+        "envios": "No especificado",
+        "obs": "Escribió al número publicado en redes sin obtener retorno. En el local, tras tocar timbre y esperar, atendieron de forma prepotente por una ventana y derivaron todo a WhatsApp: no atienden de manera presencial.",
+        "indice": 12.5
+      }
+    ],
+    "indice_atencion": 12.5,
+    "tiempo_min": 5.0,
+    "fotos": []
+  }
+];
+
+// Coordenadas aproximadas dentro de Gran Asunción. Las dos direcciones que
+// figuran en el informe (Av. España y Acceso Norte) están ubicadas con
+// precisión; el resto son aproximadas hasta contar con la dirección exacta.
+const coords = {
+  "yaguarete-espana": [-25.2968, -57.5786],
+  "yaguarete-nemby":  [-25.2222, -57.5299],
+  "yaguarete-mra":    [-25.3020, -57.5960],
+  "impress-pdv":      [-25.2860, -57.5750],
+  "jwf":              [-25.3110, -57.5700],
+  "toddo":            [-25.3400, -57.5100],
+  "fc-publicidad":    [-25.2900, -57.6020],
+  "rapid-color":      [-25.3200, -57.5820],
+  "yaguarete-cde":           [-25.5095, -54.6118],
+  "paper-box-hernandarias":  [-25.4045, -54.6377],
+};
+
+const dimensiones = [
+  "Calidad de atención","Tiempo de respuesta","Proceso comercial","Materiales ofrecidos",
+  "Capacidad de producción","Cotizaciones","Fortalezas","Debilidades","Oportunidades para Envaco"
+];
+
+const metodologiaSteps = [
+  {n:"01", t:"Selección de puntos", d:"Se definieron las empresas y locales a relevar según relevancia competitiva y zona."},
+  {n:"02", t:"Contacto simulado", d:"Un cliente ficticio solicitó cotización por los canales habituales de cada empresa."},
+  {n:"03", t:"Registro estructurado", d:"Se documentaron tiempos, materiales, trato y cotización bajo una misma ficha."},
+  {n:"04", t:"Análisis comparativo", d:"Los datos de campo se cruzaron para construir el benchmark y las recomendaciones."},
+];
+
+const journeyStages = [
+  {t:"Contacto inicial", s:"Primer acercamiento", d:"En las 13 visitas presenciales relevadas, la espera para ser atendido fue de 5 minutos o menos — la velocidad no es, hoy, un diferenciador posible (aunque en Paper Box Hernandarias esos 5 minutos terminaron en una atención por ventana, sin trato presencial real)."},
+  {t:"Trato", s:"Calidad de la atención", d:"El trato fue calificado positivo en 10 de 13 visitas, pero la calidad depende fuertemente de qué persona atiende: en una misma sucursal (Yaguareté España) una visita fue \"muy amable\" y la otra directamente indiferente."},
+  {t:"Asesoramiento y precios", s:"Información comercial", d:"Solo en 6 de 13 visitas se entregó información de precios clara y por escala en el momento. En el resto, el dato quedó \"a confirmar\" o dependía de una única persona no disponible."},
+  {t:"Cotización formal", s:"Propuesta por escrito", d:"Ninguna de las empresas relevadas entregó una cotización formal por escrito durante la visita: toda la información comercial fue verbal."},
+  {t:"Seguimiento", s:"Post-visita", d:"No se registró ningún contacto de seguimiento posterior a la visita en ninguno de los casos relevados."},
+];
+
+const fortalezas = [
+  {k:"Atención inicial", t:"Trato cálido en el primer contacto", d:"En la gran mayoría de las visitas, el primer contacto fue calificado como cordial y con disposición a ayudar."},
+  {k:"Velocidad", t:"Esperas presenciales muy cortas", d:"Ninguna visita presencial superó los 5 minutos de espera para ser atendida."},
+  {k:"Precios por escala", t:"Estructura de precios clara (Yaguareté)", d:"La mayoría de las sucursales de Yaguareté relevadas maneja listas de precios por cantidad, lo que agiliza la decisión de compra del cliente."},
+];
+const debilidades = [
+  {k:"Inconsistencia", t:"La atención varía según quién atiende", d:"En una misma sucursal (Yaguareté España), una visita fue una \"buena experiencia\" y la otra directamente indiferente."},
+  {k:"Dependencia de una persona", t:"Sin respaldo comercial", d:"En Toddo Group y FC Publicidad, toda la información de precios depende de una sola persona (dueña o vendedora clave), sin backup."},
+  {k:"Primera línea sin poder resolver", t:"Recepción sin capacidad de derivar", d:"En Impress PDV y JWF, quien recibe al cliente no tiene la información y deriva todo a un tercero, enfriando el primer contacto."},
+];
+const oportunidades = [
+  {k:"Oportunidad 01", t:"Precios por escala, siempre disponibles", d:"Ofrecer una lista de precios clara y accesible en el momento, cuando la mitad del mercado no logra entregarla en la visita."},
+  {k:"Oportunidad 02", t:"Consistencia de atención", d:"Garantizar el mismo nivel de trato sin importar quién reciba al cliente, algo que hoy varía fuerte incluso dentro de una misma empresa."},
+  {k:"Oportunidad 03", t:"Terreno de exhibidores/POP", d:"Tres de los diez competidores relevados (Toddo, FC Publicidad, JWF) ya no compiten en cartón — se movieron a exhibidores y stands, el terreno más directo de Envaco."},
+];
+
+const insights = [
+  "La velocidad de atención ya es alta en toda la plaza (5 minutos o menos): Envaco no puede diferenciarse solo por rapidez, la batalla real está en el trato y la consistencia.",
+  "3 de los 10 competidores relevados (Toddo, FC Publicidad, JWF) ya no compiten en cartón — se movieron a exhibidores y stands. El terreno de Envaco se solapa más con ellos que con las cartoneras tradicionales.",
+  "La transparencia de precios es el punto más débil del mercado: en casi la mitad de las visitas no se obtuvo información clara o por escala en el momento.",
+];
+
+const recomendaciones = [
+  {n:"01", t:"Protocolo de atención uniforme", d:"Estandarizar el trato inicial para que no dependa de qué persona reciba al cliente.", impacto:80, esfuerzo:25},
+  {n:"02", t:"Tabla de precios por escala, siempre a mano", d:"Tener precios claros y disponibles en el momento, como referencia inmediata frente a la competencia.", impacto:75, esfuerzo:20},
+  {n:"03", t:"Backup comercial ante ausencias", d:"Evitar que la cotización dependa de una sola persona clave, como ocurre hoy en varios competidores.", impacto:65, esfuerzo:55},
+  {n:"04", t:"Posicionamiento explícito en exhibidores/POP", d:"Competir directamente con los jugadores que ya migraron de cartón a exhibidores, aprovechando su debilidad comercial.", impacto:85, esfuerzo:75},
+];
+
+/* ============ EJE TRANSVERSAL (pilar 1 — aplica a todas las fichas) ============ */
+const ejeTransversal = [
+  {
+    empresa:"Impress PDV", ubicacion:"pending", ubicacion_nota:"No verificado en este relevamiento si la dirección publicada en redes coincide con la actual.",
+    sucursales:"1 (relevada)", atc:"Baja — recepción sin poder resolver, deriva todo a WhatsApp",
+    flujo:"El canal presencial deriva directo a un vendedor por WhatsApp; no hay cierre en el local.",
+    horario:"Cierra de 12 a 13 hs por almuerzo — un shopper debió esperar ese corte para ser atendido."
+  },
+  {
+    empresa:"Paraguay Packaging", ubicacion:"warn", ubicacion_nota:"Señalado por la dirección del estudio: la ubicación publicada en redes está desactualizada y no coincide con la actual.",
+    sucursales:"Pendiente de confirmar", atc:"Pendiente de confirmar",
+    flujo:"Pendiente de confirmar",
+    horario:"Señalado por la dirección del estudio: no atendieron un día alegando que faltaban solo 5 minutos para el cierre — bajísima flexibilidad horaria."
+  },
+  {
+    empresa:"Toddo Group", ubicacion:"pending", ubicacion_nota:"No verificado en este relevamiento.",
+    sucursales:"1 (relevada)", atc:"Baja — 3 personas atendieron sin poder resolver, sin salón de ventas",
+    flujo:"Todo pasa por una sola vendedora (Natalia Benítez) vía WhatsApp; no cartones, solo exhibidores/góndolas.",
+    horario:"Sin datos de rigidez horaria en la visita relevada."
+  },
+  {
+    empresa:"Cartones Yaguareté", ubicacion:"ok", ubicacion_nota:"Ubicaciones confirmadas por visita presencial directa (Av. España, Ñemby, Acceso Norte).",
+    sucursales:"6 puntos de venta confirmados (Asunción ×2, San Lorenzo, Ciudad del Este, Loma Pytã, Ñemby) — la red más extensa relevada.",
+    atc:"Inconsistente entre sucursales y líneas: de \"muy amable\" a indiferente según quién atienda.",
+    flujo:"El canal digital deriva a WhatsApp, pero a través de 5 líneas distintas + terceros (\"diseñador\", \"Abril Yaguareté\") — el comprador llegó a preguntar \"¿por qué tengo que hablar con tanta gente?\".",
+    horario:"Sin reporte de rigidez horaria; la fricción está en la derivación, no en el horario."
+  },
+  {
+    empresa:"Envaco (POP / Industria)", ubicacion:"ok", ubicacion_nota:"Ubicación verificada por visita presencial directa a ambas plantas.",
+    sucursales:"2 unidades relevadas (Envaco Industria y Envaco POP)",
+    atc:"Dispar según línea: Ventas (Melissa) resuelve y cotiza; el bot de Envaco POP no deriva a humano de forma confiable.",
+    flujo:"El canal digital (Envaco POP) es un bot con SLA prometido de ≤30 min; en la autoevaluación de control interno, tras elegir \"asesor humano\" no hubo respuesta posterior.",
+    horario:"Sin reporte de rigidez horaria en las visitas relevadas."
+  },
+];
+
+/* ============ COMPARATIVA DIGITAL (pilar 2) ============ */
+const digitalHallazgos = [
+  {k:"Posicionamiento SEO", t:"Posición en resultados orgánicos de Google", d:"Pendiente de confirmar — no se incluyó una medición de posición orgánica en las fuentes de este relevamiento.", pill:"pending"},
+  {k:"WhatsApp — Envaco POP", t:"Bot con SLA prometido, sin conversión confiable a humano", d:"El bot responde de inmediato y promete asesor en ≤30 min; en la autoevaluación de control interno, tras elegir \"asesor humano\" no hubo respuesta posterior, y un segundo mensaje al día siguiente quedó entregado sin responder.", pill:"warn"},
+  {k:"WhatsApp — Ventas Envaco", t:"Mejor desempeño medido del relevamiento (92,5/100)", d:"La línea de Ventas (Melissa) califica, cotiza con ficha técnica y hace seguimiento proactivo — el estándar a replicar en las demás líneas.", pill:"ok"},
+  {k:"WhatsApp — Yaguareté", t:"5 líneas activas, sin bot, condiciones inconsistentes", d:"Mínimos con logo entre 10 y 200 unidades y plazos de 5-8 a 30-45 días según qué línea atienda; solo 1 de 5 líneas cerró una cotización completa.", pill:"warn"},
+  {k:"Errores de contacto — Yaguareté", t:"Tienda online sin configurar, con datos de plantilla", d:"El sitio yaguaretedigital.cysa.com.py conserva datos de ejemplo sin reemplazar: teléfono con prefijo +1 555-555-5556 (EE.UU., no +595 Paraguay), dirección \"Fake Buena Vista Avenue\" y productos con medidas \"0×0×0 cm\".", pill:"warn"},
+];
+
+/* ============ REDES SOCIALES — Envaco vs. Yaguareté (pilar 3) ============ */
+/* Fuente: Informe RRSS Envaco vs. Yaguareté (Más Marka Plus, revisión pública 19/07/2026) */
+const redesMatriz = [
+  {dim:"Claridad del posicionamiento", envaco:5, yaguarete:4, lider:"Envaco"},
+  {dim:"Cobertura de plataformas", envaco:4, yaguarete:5, lider:"Yaguareté"},
+  {dim:"Proximidad con consumidor/emprendedor", envaco:3, yaguarete:5, lider:"Yaguareté"},
+  {dim:"Autoridad industrial y B2B", envaco:5, yaguarete:4, lider:"Envaco"},
+  {dim:"Contenido técnico", envaco:5, yaguarete:4, lider:"Envaco"},
+  {dim:"Comunicación de productos y usos", envaco:4, yaguarete:5, lider:"Yaguareté"},
+  {dim:"Integración con tiendas / compra online", envaco:2, yaguarete:5, lider:"Yaguareté"},
+  {dim:"Facilidad de contacto corporativo", envaco:5, yaguarete:4, lider:"Envaco"},
+  {dim:"Video corto / descubrimiento (TikTok)", envaco:2, yaguarete:5, lider:"Yaguareté"},
+];
+const redesPautaPaga = {status:"pending", nota:"El informe de RRSS aclara expresamente que su alcance NO incluye pauta ni inversión publicitaria. La afirmación de que Cartones Yaguareté cuenta con anuncios pautados activos queda marcada como pendiente de confirmar con evidencia adicional (ej. Meta Ad Library) antes de presentarla como hallazgo cerrado."};
+
+/* ============ CARTELERÍA E INFRAESTRUCTURA — Envaco vs. Yaguareté (pilar 4) ============ */
+const infraestructura = [
+  {empresa:"Envaco Industria", cartel:"Sin cartel ni señalización visible en fachada.", exhibicion:"No cuenta con productos ni muestras exhibidas al público — trabaja sobre producción, no sobre exhibición.", tono:"neg"},
+  {empresa:"Envaco POP", cartel:"Sin dato relevado sobre cartelería exterior.", exhibicion:"Sí tiene muestras, pero están todas juntas y encimadas, sin una segmentación clara por línea o producto.", tono:"warn"},
+  {empresa:"Cartones Yaguareté", cartel:"Puntos de venta identificados y visibles en la vía pública (red de 6 locales).", exhibicion:"Salón de exhibición óptimo: todo ordenado, con precio y tamaño a la vista del cliente.", tono:"pos"},
+];
+
+/* ============ POLÍTICAS COMERCIALES Y FIDELIZACIÓN (pilar 5) ============ */
+const politicasComerciales = [
+  {k:"Gestión de venta", t:"Alto interés en cerrar, proceso 100% virtual", d:"En el mejor caso relevado (Ventas/Melissa), hay seguimiento proactivo con nota de voz, ficha técnica y foto — pero todo el ciclo, de punta a punta, ocurre por WhatsApp, sin instancia presencial de cierre."},
+  {k:"Fidelización — Yaguareté", t:"Programa \"Cliente Fiel\"", d:"Pendiente de confirmar — no se encontró documentación de este programa en las fuentes de este relevamiento; queda marcado para validar antes de presentarlo como hallazgo cerrado."},
+  {k:"Fidelización — Envaco", t:"Sin estructura de fidelización minorista", d:"No se relevó ningún mecanismo de descuento por recurrencia o programa de cliente frecuente en los contactos a Envaco."},
+];
+
+/* ============ EVIDENCIA — Capturas de WhatsApp (tabla ejecutiva, hoja final) ============ */
+const evidenciaWhatsapp = [
+  {fuente:"EDITEX", cantidad:1},
+  {fuente:"ENVACO", cantidad:4},
+  {fuente:"ENVACO INDUSTRIA", cantidad:2},
+  {fuente:"FC INDUSTRIA", cantidad:1},
+  {fuente:"PM PRODUCCIONES", cantidad:2},
+];
+
+/* ============ RENDER ESTÁTICO ============ */
+document.getElementById('dimensiones-tags').innerHTML = dimensiones.map(d=>`<div class="tag"><span class="dot"></span>${d}</div>`).join('');
+
+document.getElementById('metodologia-steps').innerHTML = metodologiaSteps.map(s=>`
+  <div class="step-card"><div class="n">${s.n}</div><h3>${s.t}</h3><p>${s.d}</p></div>`).join('');
+
+document.getElementById('company-grid').innerHTML = companies.map(c=>`
+  <div class="company-card" onclick="openCompany('${c.id}')">
+    <div class="thumb">${c.fotos.length ? 'foto de portada' : 'fotos pendientes'}</div>
+    <h4>${c.nombre}${c.sucursal ? ' · '+c.sucursal.split(' ')[0] : ''}</h4>
+    <div class="zone">${c.rubro}</div>
+  </div>`).join('');
+
+document.getElementById('map-stats').innerHTML = `
+  <div class="stat"><div class="num">${companies.length}</div><div class="lbl">Empresas relevadas</div></div>
+  <div class="stat"><div class="num">${companies.reduce((a,c)=>a+c.visitas.length,0)}</div><div class="lbl">Visitas de campo</div></div>
+  <div class="stat"><div class="num">${Math.round(companies.filter(c=>c.tiempo_min!==null).reduce((a,c)=>a+c.tiempo_min,0)/companies.filter(c=>c.tiempo_min!==null).length)} min</div><div class="lbl">Tiempo de espera promedio</div></div>`;
+
+// Mapa real de Gran Asunción (Leaflet + tiles CartoDB Dark Matter)
+const map = L.map('map-leaflet', {
+  scrollWheelZoom:true, keyboard:true, dragging:true, touchZoom:true, doubleClickZoom:true,
+  zoomControl:false, attributionControl:true, minZoom:6, maxZoom:18
+}).setView([-23.4425, -58.4438], 6);
+
+// Límites aproximados de Paraguay, para que el mapa arranque mostrando el país completo
+const paraguayBounds = L.latLngBounds([[-27.7,-62.7],[-19.2,-54.2]]);
+map.fitBounds(paraguayBounds);
+
+L.control.zoom({position:'topright'}).addTo(map);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution:'&copy; OpenStreetMap &copy; CARTO',
+  subdomains:'abcd', maxZoom:18
+}).addTo(map);
+
+const markerBounds = [];
+const heatPoints = [];
+companies.forEach(c=>{
+  const pos = coords[c.id];
+  if(!pos) return;
+  markerBounds.push(pos);
+  // Intensidad del punto de calor: peso por cantidad de visitas registradas en ese local,
+  // para reflejar densidad real de actividad de campo, no solo presencia de un pin.
+  const peso = Math.max(1, c.visitas.length);
+  heatPoints.push([pos[0], pos[1], peso]);
+  const marker = L.circleMarker(pos, {
+    radius:8, color:'#15130F', weight:2, fillColor:'#2FB854', fillOpacity:1
+  }).addTo(map);
+  marker.bindPopup(`<b>${c.nombre}</b>${c.sucursal ? ' · '+c.sucursal : ''}<br>${c.rubro}`);
+  marker.on('click', ()=>openCompany(c.id));
+  marker.on('mouseover', ()=>marker.openPopup());
+});
+
+// Mapa de calor: densidad de locales relevados por zona (además de los pines clickeables).
+let heatLayer = null;
+if(typeof L.heatLayer === 'function'){
+  heatLayer = L.heatLayer(heatPoints, {
+    radius: 45, blur: 35, maxZoom: 14, minOpacity: 0.35,
+    gradient: {0.2:'#1c4d2e', 0.4:'#2FB854', 0.7:'#7FE39C', 1:'#EAF9EE'}
+  }).addTo(map);
+}
+window.addEventListener('resize', ()=> map.invalidateSize());
+
+// Comparativa (barras horizontales por dimensión numérica)
+const compareDims = [
+  {key:'indice_atencion', label:'Índice de atención (estimado, 0-100)'},
+];
+document.getElementById('compare-rows').innerHTML = compareDims.map(dim=>{
+  const vals = companies.map(c=>c[dim.key]);
+  const max = Math.max(...vals);
+  const rowsHtml = companies.map(c=>{
+    const v = c[dim.key];
+    const pct = (v/max)*100;
+    return `<div class="compare-bar-wrap">
+      <div class="name">${c.nombre}${c.sucursal ? ' ('+c.sucursal.split(' ')[0]+')' : ''}</div>
+      <div class="compare-bar-bg"><div class="compare-bar-fill" style="width:${pct}%"></div></div>
+      <div class="val">${v}</div>
+    </div>`;
+  }).join('');
+  return `<div class="compare-row"><div class="lbl-row"><span>${dim.label}</span></div><div class="compare-track">${rowsHtml}</div></div>`;
+}).join('');
+
+// Benchmark scatter (se omiten empresas sin tiempo de espera registrado)
+const withTime = companies.filter(c=>c.tiempo_min!==null);
+const maxTiempo = Math.max(...withTime.map(c=>c.tiempo_min));
+let scatterHtml = document.getElementById('scatter-wrap').innerHTML;
+withTime.forEach(c=>{
+  const x = (c.tiempo_min/maxTiempo)*88 + 4;
+  const y = (c.indice_atencion/100)*88 + 4;
+  scatterHtml += `<div class="scatter-dot" style="left:${x}%; bottom:${y}%" onclick="openCompany('${c.id}')" title="${c.nombre}${c.sucursal?' ('+c.sucursal.split(' ')[0]+')':''}"></div>`;
+});
+document.getElementById('scatter-wrap').innerHTML = scatterHtml;
+
+// Journey
+document.getElementById('journey-track').innerHTML = journeyStages.map((s,i)=>`
+  <div class="journey-stage ${i===0?'on':''}" data-i="${i}" onclick="setJourney(${i})">
+    <div class="pip"></div><h4>${s.t}</h4><div class="sub">${s.s}</div>
+  </div>`).join('');
+function setJourney(i){
+  document.querySelectorAll('.journey-stage').forEach(el=>el.classList.toggle('on', +el.dataset.i===i));
+  document.getElementById('journey-detail').innerHTML = `<p>${journeyStages[i].d}</p>`;
+}
+setJourney(0);
+
+// FODA
+function renderFoda(id, arr, cls){
+  document.getElementById(id).innerHTML = arr.map(x=>`
+    <div class="foda-card ${cls}"><div class="k">${x.k}</div><h4>${x.t}</h4><p>${x.d}</p></div>`).join('');
+}
+renderFoda('fortalezas-grid', fortalezas, 'pos');
+renderFoda('debilidades-grid', debilidades, 'neg');
+renderFoda('oportunidades-grid', oportunidades, 'opp');
+
+// Insights
+document.getElementById('insight-list').innerHTML = insights.map((t,i)=>`
+  <div class="insight-item"><div class="n">${String(i+1).padStart(2,'0')}</div><p>${t}</p></div>`).join('');
+
+// Recommendation matrix
+document.getElementById('rec-matrix').innerHTML = `
+  <span class="matrix-q-label" style="top:8px; left:12px;">Alto impacto / bajo esfuerzo</span>
+  <span class="matrix-q-label" style="bottom:8px; right:12px;">Bajo impacto / alto esfuerzo</span>
+` + recomendaciones.map(r=>`
+  <div class="matrix-item" style="left:${r.esfuerzo}%; bottom:${r.impacto}%" title="${r.t}"></div>`).join('');
+document.getElementById('rec-list').innerHTML = recomendaciones.map(r=>`
+  <li><span class="rn">${r.n}</span><h4>${r.t}</h4><p>${r.d}</p></li>`).join('');
+
+/* ============ EJE TRANSVERSAL — tabla ejecutiva ============ */
+document.getElementById('eje-table-body').innerHTML = ejeTransversal.map(e=>{
+  const pillClass = e.ubicacion==='ok' ? 'ok' : e.ubicacion==='warn' ? 'warn' : 'pending';
+  const pillTxt = e.ubicacion==='ok' ? 'Verificada' : e.ubicacion==='warn' ? 'Desactualizada' : 'Pendiente';
+  return `<tr>
+    <td>${e.empresa}</td>
+    <td><span class="status-pill ${pillClass}">${pillTxt}</span><div style="margin-top:6px; font-size:12px; color:var(--carbon-45);">${e.ubicacion_nota}</div></td>
+    <td>${e.sucursales}</td>
+    <td>${e.atc}</td>
+    <td>${e.flujo}</td>
+    <td>${e.horario}</td>
+  </tr>`;
+}).join('');
+
+/* ============ COMPARATIVA DIGITAL ============ */
+document.getElementById('digital-grid').innerHTML = digitalHallazgos.map(x=>`
+  <div class="foda-card ${x.pill==='ok'?'pos':x.pill==='warn'?'neg':'opp'}">
+    <div class="k">${x.k}</div><h4>${x.t}</h4><p>${x.d}</p>
+  </div>`).join('');
+
+/* ============ COMPARACIÓN DE PÁGINAS WEB ============ */
+const webCompareRows = [
+  {criterio:"Arquitectura", envaco:"Separa Industrial y Digital; tecnología, certificaciones, sostenibilidad, contacto.", yaguarete:"Conecta productos, tiendas, compra online, contactos y reciclaje.", ventaja:"Según usuario"},
+  {criterio:"Información técnica", envaco:"Alta — posicionamiento, productos, tecnología y respaldo institucional.", yaguarete:"Media/alta — buena amplitud, con foco comercial y de tiendas.", ventaja:"Envaco"},
+  {criterio:"Información comercial", envaco:"Formularios y contactos diferenciados; menor autoservicio por solución.", yaguarete:"Tiendas, teléfonos, compra online y rutas hacia unidades comerciales.", ventaja:"Yaguareté"},
+  {criterio:"Orientación B2B", envaco:"Alta — estructura corporativa y segmentación por unidad.", yaguarete:"Media/alta — capacidad industrial, ecosistema más amplio.", ventaja:"Envaco"},
+  {criterio:"Orientación minorista", envaco:"Media — no es el foco dominante del sitio.", yaguarete:"Alta — tiendas, catálogo y compra/pickup.", ventaja:"Yaguareté"},
+  {criterio:"Facilidad de próximo paso", envaco:"Alta para contacto corporativo; puede requerir asesor para definir solución.", yaguarete:"Alta para encontrar tienda, comprar o contactar.", ventaja:"Yaguareté"},
+];
+document.getElementById('webcompare-table-body').innerHTML = webCompareRows.map(r=>`
+  <tr><td>${r.criterio}</td><td>${r.envaco}</td><td>${r.yaguarete}</td><td>${r.ventaja}</td></tr>`).join('');
+
+/* ============ REDES SOCIALES ============ */
+document.getElementById('redes-table-body').innerHTML = redesMatriz.map(r=>`
+  <tr><td>${r.dim}</td><td>${r.envaco}</td><td>${r.yaguarete}</td><td>${r.lider}</td></tr>`).join('');
+document.getElementById('redes-pauta-note').innerHTML = `<span class="status-pill pending">Pendiente de confirmar</span><p style="margin-top:8px;">${redesPautaPaga.nota}</p>`;
+
+/* ============ INFRAESTRUCTURA Y CARTELERÍA ============ */
+document.getElementById('infra-grid').innerHTML = infraestructura.map(x=>`
+  <div class="provider-card">
+    <h4>${x.empresa}<span class="status-pill ${x.tono==='pos'?'ok':x.tono==='neg'?'warn':'pending'}">${x.tono==='pos'?'Fortaleza':x.tono==='neg'?'Debilidad':'A mejorar'}</span></h4>
+    <ul>
+      <li><b>Cartelería exterior:</b> ${x.cartel}</li>
+      <li><b>Exhibición:</b> ${x.exhibicion}</li>
+    </ul>
+  </div>`).join('');
+
+/* ============ POLÍTICAS COMERCIALES ============ */
+document.getElementById('politicas-grid').innerHTML = politicasComerciales.map(x=>`
+  <div class="foda-card ${x.t.includes('Pendiente')||x.d.includes('Pendiente de confirmar')?'opp':'pos'}">
+    <div class="k">${x.k}</div><h4>${x.t}</h4><p>${x.d}</p>
+  </div>`).join('');
+
+/* ============ EVIDENCIA — Fotos presenciales (dinámico, según fotos reales cargadas) ============ */
+document.getElementById('evidencia-fotos-body').innerHTML = companies.map(c=>`
+  <tr><td>${c.nombre}${c.sucursal?' · '+c.sucursal:''}</td><td>Presencial</td><td>${c.fotos.length} foto${c.fotos.length===1?'':'s'}</td></tr>`
+).join('');
+document.getElementById('evidencia-fotos-total').textContent = companies.reduce((a,c)=>a+c.fotos.length,0);
+
+/* ============ EVIDENCIA — Capturas de WhatsApp ============ */
+document.getElementById('evidencia-whatsapp-body').innerHTML = evidenciaWhatsapp.map(e=>`
+  <tr><td>${e.fuente}</td><td>WhatsApp</td><td>${e.cantidad} foto${e.cantidad===1?'':'s'}</td></tr>`
+).join('');
+document.getElementById('evidencia-whatsapp-total').textContent = evidenciaWhatsapp.reduce((a,e)=>a+e.cantidad,0);
+
+/* ============ NAV ENGINE ============ */
+const sceneOrder = ['cover','agenda','objetivo','metodologia','mapa','empresas','ficha','ejetransversal',
+  'digital','webcompare','redes','infraestructura','politicas',
+  'precios','comparativa','benchmark','journey','fortalezas','debilidades','insights','oportunidades','recomendaciones','conclusiones',
+  'evidenciafotos','evidenciawhatsapp'];
+const sceneTitles = {
+  cover:'Portada', agenda:'Agenda', objetivo:'Objetivo del estudio', metodologia:'Metodología',
+  mapa:'Cobertura geográfica', empresas:'Empresas relevadas', ficha:'Ficha individual',
+  ejetransversal:'Eje transversal por proveedor',
+  digital:'Comparativa digital y WhatsApp', webcompare:'Comparación de páginas web',
+  redes:'Redes sociales: Envaco vs. Yaguareté', infraestructura:'Cartelería e infraestructura',
+  politicas:'Políticas comerciales y fidelización',
+  precios:'Comparativa de precios',
+  comparativa:'Comparativa entre empresas', benchmark:'Benchmark competitivo', journey:'Customer journey',
+  fortalezas:'Fortalezas', debilidades:'Debilidades', insights:'Insights',
+  oportunidades:'Oportunidades para Envaco', recomendaciones:'Recomendaciones', conclusiones:'Conclusiones',
+  evidenciafotos:'Consolidado de evidencia: fotos presenciales', evidenciawhatsapp:'Consolidado de evidencia: capturas WhatsApp'
+};
+let current = 0;
+
+document.getElementById('agenda-list').innerHTML = sceneOrder.map((id,i)=>{
+  const el = document.getElementById('scene-'+id);
+  const act = el ? el.dataset.act : '';
+  return `<li onclick="goTo(${i})"><span class="num">${String(i).padStart(2,'0')}</span><span class="act">${act}</span><span class="title">${sceneTitles[id]}</span></li>`;
+}).join('');
+
+document.getElementById('overview-grid').innerHTML = sceneOrder.map((id,i)=>`
+  <div class="overview-card" onclick="goTo(${i}); toggleOverview(false);">
+    <div class="n">${String(i).padStart(2,'0')}</div><h4>${sceneTitles[id]}</h4>
+  </div>`).join('');
+
+function goTo(i){
+  if(i<0) i=0; if(i>sceneOrder.length-1) i=sceneOrder.length-1;
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  const id = sceneOrder[i];
+  document.getElementById('scene-'+id).classList.add('active');
+  current = i;
+  document.getElementById('progress-fill').style.width = `${(i/(sceneOrder.length-1))*100}%`;
+  document.getElementById('act-label').textContent = document.getElementById('scene-'+id).dataset.act || '';
+  document.getElementById('scene-counter').textContent = `${String(i+1).padStart(2,'0')} / ${sceneOrder.length}`;
+  // En el slide del mapa, las zonas de navegación (bordes izq/der) no deben bloquear
+  // el arrastre/zoom de Leaflet: se desactivan mientras esa escena está activa.
+  const onMapa = id==='mapa';
+  document.getElementById('navzone-prev').style.pointerEvents = onMapa ? 'none' : '';
+  document.getElementById('navzone-next').style.pointerEvents = onMapa ? 'none' : '';
+  if(onMapa && typeof map !== 'undefined'){
+    setTimeout(()=>{ map.invalidateSize(); map.fitBounds(paraguayBounds); }, 120);
+    setTimeout(()=>{ map.invalidateSize(); map.fitBounds(paraguayBounds); }, 620);
+  }
+}
+function next(){ goTo(current+1); }
+function prev(){ goTo(current-1); }
+
+document.getElementById('navzone-next').addEventListener('click', next);
+document.getElementById('navzone-prev').addEventListener('click', prev);
+
+let overviewOpen = false;
+function toggleOverview(force){
+  overviewOpen = force !== undefined ? force : !overviewOpen;
+  document.getElementById('overview').classList.toggle('open', overviewOpen);
+}
+
+window.addEventListener('keydown', (e)=>{
+  if(document.getElementById('overlay').classList.contains('open')){
+    if(e.key === 'Escape') closeCompany();
+    return;
+  }
+  if(e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') next();
+  else if(e.key === 'ArrowLeft' || e.key === 'PageUp') prev();
+  else if(e.key.toLowerCase() === 'o') toggleOverview();
+  else if(e.key === 'Escape') toggleOverview(false);
+});
+
+let hintTimer = setTimeout(()=>document.getElementById('hint').classList.add('show'), 600);
+document.addEventListener('click', ()=>{ document.getElementById('hint').classList.remove('show'); clearTimeout(hintTimer); }, {once:true});
+
+/* ============ COMPANY OVERLAY LOGIC ============ */
+let ovPhotoIndex = 0;
+let ovCompany = null;
+function openCompany(id){
+  ovCompany = companies.find(c=>c.id===id);
+  if(!ovCompany) return;
+  ovPhotoIndex = 0;
+  renderOverlay();
+  document.getElementById('overlay').classList.add('open');
+}
+function closeCompany(){
+  document.getElementById('overlay').classList.remove('open');
+}
+function ovPhoto(dir){
+  const n = ovCompany.fotos.length;
+  ovPhotoIndex = (ovPhotoIndex + dir + n) % n;
+  renderOverlay(true);
+}
+function renderOverlay(photoOnly){
+  const c = ovCompany;
+  const gallery = document.getElementById('ov-gallery');
+  gallery.querySelectorAll('.ov-photo, .no-photos-note').forEach(p=>p.remove());
+  if(c.fotos.length){
+    c.fotos.forEach((f,i)=>{
+      const div = document.createElement('div');
+      div.className = 'ov-photo' + (i===ovPhotoIndex ? ' show':'');
+      const esFotoReal = /\.(jpe?g|png|webp|gif)$/i.test(f);
+      if(esFotoReal){
+        div.innerHTML = `<img src="${f}" alt="${c.nombre} · foto ${i+1}" loading="lazy">`;
+      } else {
+        div.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M21 16l-5-5-4 4-3-3-5 5"/></svg><span>${f}</span>`;
+      }
+      gallery.insertBefore(div, document.getElementById('ov-dots'));
+    });
+    document.getElementById('ov-dots').innerHTML = c.fotos.map((_,i)=>`<span class="${i===ovPhotoIndex?'on':''}"></span>`).join('');
+  } else {
+    const note = document.createElement('div');
+    note.className = 'no-photos-note';
+    note.textContent = 'Fotos pendientes de carga';
+    gallery.appendChild(note);
+    document.getElementById('ov-dots').innerHTML = '';
+  }
+  if(photoOnly) return;
+  const visitsHtml = c.visitas.map(v=>`
+    <div class="visit-card">
+      <div class="visit-head"><span class="who">${v.atendio} · shopper ${v.shopper}</span><span class="when">${v.fecha} · ${v.canal}</span></div>
+      <div class="visit-grid">
+        <div class="f"><span class="k">Tiempo</span>${v.tiempo_txt}</div>
+        <div class="f"><span class="k">Trato</span>${v.trato}</div>
+        <div class="f"><span class="k">Informó precios</span>${v.precios} — ${v.precios_txt}</div>
+        <div class="f"><span class="k">Plazo de entrega</span>${v.plazo}</div>
+        <div class="f"><span class="k">Productos</span>${v.productos}</div>
+        <div class="f"><span class="k">Envíos</span>${v.envios}</div>
+      </div>
+      <p class="visit-quote">"${v.obs}"</p>
+    </div>`).join('');
+  document.getElementById('ov-body').innerHTML = `
+    <h2>${c.nombre}</h2>
+    <div class="ov-zone">${c.sucursal ? c.sucursal+' · ' : ''}${c.zona} · ${c.rubro}</div>
+    <div class="ov-stats">
+      <div class="ov-stat"><div class="lbl">Índice de atención (estimado)</div><div class="val">${c.indice_atencion}/100</div></div>
+      <div class="ov-stat"><div class="lbl">Tiempo de espera promedio</div><div class="val">${c.tiempo_min!==null ? c.tiempo_min+' min' : 'No registrado'}</div></div>
+    </div>
+    <div class="ov-block"><h4>Visitas registradas (${c.visitas.length})</h4>${visitsHtml}</div>
+  `;
+}
+
+goTo(0);
+</script>
+</body>
+</html>
+
