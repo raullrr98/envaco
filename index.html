@@ -55,7 +55,7 @@ a{color:inherit;}
 .scene{
   position:absolute; inset:0;
   display:flex; flex-direction:column; justify-content:flex-start;
-  padding: 12vh 8vw 6vh;
+  padding: 11vh 5vw 6vh;
   opacity:0; visibility:hidden;
   transform:translateY(18px);
   transition:opacity .55s var(--ease), transform .55s var(--ease), visibility 0s linear .55s;
@@ -67,7 +67,7 @@ a{color:inherit;}
 }
 .scene.scene-hero{justify-content:center; padding:5.5vh 8vw;}
 .scene::-webkit-scrollbar{display:none;}
-.scene-inner{max-width:1180px; width:100%; margin:0 auto;}
+.scene-inner{max-width:1340px; width:100%; margin:0 auto;}
 #chrome{position:fixed; top:0; left:0; right:0; z-index:50; pointer-events:none;}
 #progress-track{height:2px; background:var(--linea); width:100%;}
 #progress-fill{height:100%; background:var(--verde); width:0%; transition:width .5s var(--ease);}
@@ -85,11 +85,11 @@ a{color:inherit;}
 }
 #hint.show{opacity:1;}
 #hint kbd{border:1px solid var(--linea); border-radius:4px; padding:1px 6px; font-family:inherit;}
-.h-xl{font-size:clamp(34px,4.6vw,62px); line-height:1.05;}
-.h-lg{font-size:clamp(22px,2.6vw,36px); line-height:1.14;}
-.h-md{font-size:clamp(18px,1.9vw,24px); line-height:1.2;}
-.p-lg{font-size:16px; line-height:1.58; color:var(--carbon-70); max-width:620px;}
-.p-md{font-size:13.5px; line-height:1.55; color:var(--carbon-70);}
+.h-xl{font-size:clamp(36px,5vw,66px); line-height:1.05;}
+.h-lg{font-size:clamp(25px,3vw,40px); line-height:1.16;}
+.h-md{font-size:clamp(19px,2.1vw,26px); line-height:1.22;}
+.p-lg{font-size:17.5px; line-height:1.6; color:var(--carbon-70); max-width:680px;}
+.p-md{font-size:15px; line-height:1.58; color:var(--carbon-70);}
 .mono{font-family:'IBM Plex Mono',monospace;}
 #scene-cover .scene-inner{display:flex; flex-direction:column; height:78vh; justify-content:space-between;}
 .cover-top{display:flex; justify-content:space-between; align-items:flex-start;}
@@ -113,8 +113,8 @@ a{color:inherit;}
 }
 .agenda-list li:hover{padding-left:10px; color:var(--verde-oscuro);}
 .agenda-list .num{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--carbon-45); width:24px; flex-shrink:0;}
-.agenda-list .act{font-family:'IBM Plex Mono',monospace; font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--verde-oscuro); width:118px; flex-shrink:0; line-height:1.3;}
-.agenda-list .title{font-family:'Fraunces',serif; font-size:15.5px; line-height:1.25;}
+.agenda-list .act{font-family:'IBM Plex Mono',monospace; font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--verde-oscuro); width:145px; flex-shrink:0; line-height:1.3;}
+.agenda-list .title{font-family:'Fraunces',serif; font-size:17px; line-height:1.28;}
 @media (max-width: 900px){ .agenda-list{grid-template-columns:1fr;} }
 .tag-row{display:flex; flex-wrap:wrap; gap:9px; margin-top:18px;}
 .tag{
@@ -218,19 +218,19 @@ a{color:inherit;}
 .journey-stage h4{font-size:14.5px; margin-bottom:6px;}
 .journey-stage .sub{font-size:12px; color:var(--carbon-45);}
 .journey-detail{margin-top:22px; padding-top:18px; border-top:1px solid var(--linea); max-width:680px; min-height:70px;}
-.journey-detail p{font-size:14.5px; line-height:1.65; color:var(--carbon-70);}
+.journey-detail p{font-size:16px; line-height:1.65; color:var(--carbon-70);}
 .foda-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:20px;}
 .foda-card{border-radius:var(--radius-card); padding:18px; border:1px solid var(--linea);}
 .foda-card.pos{background:var(--verde-tint); border-color:transparent;}
 .foda-card.neg{background:var(--terracota-tint); border-color:transparent;}
 .foda-card.opp{background:var(--ambar-tint); border-color:transparent;}
 .foda-card .k{font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.05em; opacity:.65; margin-bottom:10px;}
-.foda-card h4{font-size:16.5px; margin-bottom:8px;}
-.foda-card p{font-size:13.5px; line-height:1.55; color:var(--carbon-70);}
+.foda-card h4{font-size:18px; margin-bottom:8px;}
+.foda-card p{font-size:15px; line-height:1.58; color:var(--carbon-70);}
 .insight-list{margin-top:16px; display:flex; flex-direction:column;}
 .insight-item{display:flex; gap:22px; padding:16px 0; border-bottom:1px solid var(--linea);}
 .insight-item .n{font-family:'Fraunces',serif; font-size:26px; color:var(--verde); width:50px; flex-shrink:0;}
-.insight-item p{font-size:16px; line-height:1.6; max-width:680px;}
+.insight-item p{font-size:17.5px; line-height:1.6; max-width:740px;}
 .matrix-wrap{display:grid; grid-template-columns:1fr 1fr; gap:36px; margin-top:20px; align-items:start;}
 .matrix{position:relative; height:280px; border:1px solid rgba(255,255,255,.22); border-radius:12px; background:var(--papel-2);}
 .matrix::before,.matrix::after{content:''; position:absolute; background:rgba(255,255,255,.18);}
@@ -247,21 +247,21 @@ a{color:inherit;}
 .status-pill.ok{color:var(--verde); border-color:var(--verde);}
 .status-pill.warn{color:var(--ambar,#C9932F); border-color:var(--ambar,#C9932F);}
 .status-pill.pending{color:var(--carbon-45); border-color:var(--linea);}
-.exec-table{width:100%; border-collapse:collapse; margin-top:18px; font-size:13.5px;}
-.exec-table th{text-align:left; font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--carbon-45); font-weight:500; padding:10px 14px; border-bottom:1px solid var(--linea);}
+.exec-table{width:100%; border-collapse:collapse; margin-top:18px; font-size:15px;}
+.exec-table th{text-align:left; font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--carbon-45); font-weight:500; padding:10px 14px; border-bottom:1px solid var(--linea);}
 .exec-table td{padding:12px 14px; border-bottom:1px solid var(--linea); vertical-align:top; color:var(--carbon-70);}
 .exec-table td:first-child, .exec-table th:first-child{color:var(--carbon); font-weight:500;}
 .exec-table tr:last-child td{border-bottom:none;}
 .exec-table tbody tr:hover{background:var(--papel-2);}
 .provider-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:20px;}
 .provider-card{border:1px solid var(--linea); border-radius:var(--radius-card); padding:20px; background:var(--papel-2);}
-.provider-card h4{font-size:16.5px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:10px;}
+.provider-card h4{font-size:18px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:10px;}
 .provider-card ul{list-style:none; display:flex; flex-direction:column; gap:9px;}
-.provider-card li{font-size:13.5px; color:var(--carbon-70); line-height:1.5; padding-left:14px; position:relative;}
+.provider-card li{font-size:15px; color:var(--carbon-70); line-height:1.52; padding-left:14px; position:relative;}
 .provider-card li::before{content:'—'; position:absolute; left:0; color:var(--carbon-45);}
 .evidence-note{margin-top:16px; padding:14px 16px; border:1px dashed var(--linea); border-radius:10px; font-size:12.5px; color:var(--carbon-45); line-height:1.55;}
 #scene-conclusiones .scene-inner{text-align:left;}
-.close-quote{font-family:'Fraunces',serif; font-size:clamp(28px,3.2vw,42px); line-height:1.28; max-width:820px; margin:26px 0 60px;}
+.close-quote{font-family:'Fraunces',serif; font-size:clamp(30px,3.6vw,46px); line-height:1.3; max-width:900px; margin:26px 0 60px;}
 .close-foot{display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--linea); padding-top:24px;}
 .close-logos{display:flex; align-items:center; gap:22px;}
 .close-logos img{height:22px; opacity:.85;}
@@ -315,7 +315,7 @@ a{color:inherit;}
       </div>
       <div class="cover-title">
         <div class="eyebrow">Estudio de mercado · Mystery shopper</div>
-        <h1 class="h-xl">Cómo compite<br>Envaco POP hoy.</h1>
+        <h1 class="h-xl">Mystery Shopper</h1>
         <p class="p-lg" style="margin-top:16px;">Un relevamiento directo de la experiencia comercial en empresas de soluciones POP, packaging y exhibidores — para entender dónde está parada Envaco frente al mercado.</p>
       </div>
       <div class="cover-foot">
@@ -342,14 +342,6 @@ a{color:inherit;}
     </div>
   </section>
 
-  <section class="scene" id="scene-metodologia" data-act="Contexto">
-    <div class="scene-inner">
-      <div class="eyebrow">Metodología</div>
-      <h2 class="h-lg" style="margin-top:11px;">Cuatro pasos, un mismo criterio para todas las empresas.</h2>
-      <div class="step-row" id="metodologia-steps"></div>
-    </div>
-  </section>
-
   <section class="scene" id="scene-mapa" data-act="Relevamiento">
     <div class="scene-inner">
       <div class="eyebrow">Cobertura geográfica</div>
@@ -361,16 +353,16 @@ a{color:inherit;}
     </div>
   </section>
 
-  <section class="scene" id="scene-empresas" data-act="Relevamiento · Visitas presenciales">
+  <section class="scene" id="scene-empresas" data-act="Relevamiento">
     <div class="scene-inner">
       <div class="eyebrow">Empresas relevadas</div>
-      <h2 class="h-lg" style="margin-top:11px;">Así se ve la competencia — y nuestro propio control.</h2>
+      <h2 class="h-lg" style="margin-top:11px;">EMPRESAS RELEVADAS</h2>
       <p class="p-md" style="margin-top:8px; max-width:640px;">Clic sobre cualquier empresa para abrir su ficha completa. Incluye Envaco POP e Industria, relevadas con la misma metodología como control interno.</p>
       <div class="company-grid" id="company-grid"></div>
     </div>
   </section>
 
-  <section class="scene" id="scene-digital" data-act="Relevamiento · Canales digitales">
+  <section class="scene" id="scene-digital" data-act="Canales digitales">
     <div class="scene-inner">
       <div class="eyebrow">Comparativa digital</div>
       <h2 class="h-lg" style="margin-top:11px; max-width:700px;">Bot, tiempo de respuesta e interés en cerrar la venta.</h2>
@@ -378,11 +370,10 @@ a{color:inherit;}
     </div>
   </section>
 
-  <section class="scene" id="scene-webcompare" data-act="Relevamiento · Canales digitales">
+  <section class="scene" id="scene-webcompare" data-act="Canales digitales">
     <div class="scene-inner">
       <div class="eyebrow">Comparación de páginas web</div>
       <h2 class="h-lg" style="margin-top:11px; max-width:700px;">Envaco vs. Yaguareté: facilidad para conseguir información.</h2>
-      <p class="p-md" style="margin-top:8px; max-width:680px;">Fuente: Informe RRSS Envaco vs. Yaguareté (Más Marka Plus, revisión pública al 19/07/2026). Escala cualitativa según evidencia pública observable.</p>
       <div style="overflow-x:auto; margin-top:8px;">
         <table class="exec-table">
           <thead><tr><th>Criterio</th><th>Envaco</th><th>Yaguareté</th><th>Ventaja</th></tr></thead>
@@ -392,7 +383,7 @@ a{color:inherit;}
     </div>
   </section>
 
-  <section class="scene" id="scene-redes" data-act="Relevamiento · Redes sociales">
+  <section class="scene" id="scene-redes" data-act="Redes sociales">
     <div class="scene-inner">
       <div class="eyebrow">Auditoría de redes sociales</div>
       <h2 class="h-lg" style="margin-top:11px; max-width:700px;">Envaco vs. Yaguareté.</h2>
@@ -408,7 +399,7 @@ a{color:inherit;}
     </div>
   </section>
 
-  <section class="scene" id="scene-infraestructura" data-act="Relevamiento · Infraestructura">
+  <section class="scene" id="scene-infraestructura" data-act="Infraestructura">
     <div class="scene-inner">
       <div class="eyebrow">Cartelería e infraestructura en locales</div>
       <h2 class="h-lg" style="margin-top:11px; max-width:700px;">Envaco vs. Yaguareté: visibilidad exterior y modelo de exhibición.</h2>
@@ -416,7 +407,7 @@ a{color:inherit;}
     </div>
   </section>
 
-  <section class="scene" id="scene-politicas" data-act="Relevamiento · Políticas comerciales">
+  <section class="scene" id="scene-politicas" data-act="Políticas comerciales">
     <div class="scene-inner">
       <div class="eyebrow">Políticas comerciales y ventas</div>
       <h2 class="h-lg" style="margin-top:11px; max-width:700px;">Qué tan fácil es cerrar una venta, y qué tan fácil es que el cliente vuelva.</h2>
@@ -428,17 +419,8 @@ a{color:inherit;}
     <div class="scene-inner">
       <div class="eyebrow">Comparativa entre empresas</div>
       <h2 class="h-lg" style="margin-top:11px;">Cómo se ordena el mercado.</h2>
-      <p class="p-md" style="margin-top:8px; max-width:640px;">El índice de atención es una estimación propia que combina proactividad, trato, información de precios y tiempo de espera en cada visita — a validar en conjunto con Envaco.</p>
+      <p class="p-md" style="margin-top:8px; max-width:640px;">El índice de atención es una estimación propia que combina proactividad, trato, información de precios y tiempo de espera en cada visita.</p>
       <div class="compare-rows" id="compare-rows"></div>
-    </div>
-  </section>
-
-  <section class="scene" id="scene-journey" data-act="Análisis">
-    <div class="scene-inner">
-      <div class="eyebrow">Customer journey</div>
-      <h2 class="h-lg" style="margin-top:11px;">El recorrido típico de un cliente que cotiza.</h2>
-      <div class="journey-track" id="journey-track"></div>
-      <div class="journey-detail" id="journey-detail"></div>
     </div>
   </section>
 
@@ -474,12 +456,26 @@ a{color:inherit;}
     </div>
   </section>
 
+  <section class="scene" id="scene-industria" data-act="Análisis">
+    <div class="scene-inner">
+      <div class="eyebrow">Canal industrial</div>
+      <h2 class="h-lg" style="margin-top:11px; max-width:700px;">Yaguareté Industria vs. Envaco Industria.</h2>
+      <p class="p-md" style="margin-top:8px; max-width:680px;">Este estudio se enfocó en el canal minorista de Yaguareté (sus locales de venta al público) — su división industrial no fue relevada todavía. Lo que sí tenemos de Envaco Industria viene de la visita de control interno.</p>
+      <div style="overflow-x:auto; margin-top:8px;">
+        <table class="exec-table">
+          <thead><tr><th>Dimensión</th><th>Envaco Industria</th><th>Yaguareté Industria</th></tr></thead>
+          <tbody id="industria-table-body"></tbody>
+        </table>
+      </div>
+      <div class="evidence-note">Nota: las columnas de Yaguareté Industria quedan marcadas como "sin datos relevados" a propósito — no se inventó información. Si sirve, se puede sumar una ronda de mystery shopper específica al canal industrial de Yaguareté para tener la comparación completa.</div>
+    </div>
+  </section>
+
   <section class="scene scene-hero" id="scene-conclusiones" data-act="Recomendaciones">
     <div class="scene-inner">
       <div class="eyebrow">Conclusiones</div>
       <p class="close-quote">El mercado de soluciones POP compite hoy más por tiempo de respuesta y trato que por precio. Ahí está la oportunidad más clara para Envaco.</p>
-      <div class="close-foot">
-        <div class="p-md" style="max-width:480px;">Próximo paso: revisar estas recomendaciones en conjunto y priorizar un plan de acción a 90 días.</div>
+      <div class="close-foot" style="justify-content:flex-end;">
         <div class="close-logos">
           <span class="mono" style="font-size:12px; letter-spacing:.04em; color:var(--carbon-70); opacity:.85;">ENVACO</span>
           <span class="x">×</span>
@@ -555,7 +551,25 @@ const companies = [
         "obs": "Pidió cotización por 1.200 cajas y la recibió en 2 minutos.", "indice": 87.5
       }
     ],
-    "indice_atencion": 79.2, "tiempo_min": 1.0, "fotos": []
+    "indice_atencion": 79.2, "tiempo_min": 1.0, "fotos": [
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.31%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.31%20%282%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.31.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.32%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.32%20%282%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.32.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.33%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.33.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.34%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-09%20at%2016.19.34.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-17%20at%2013.45.58%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-17%20at%2013.45.58%20%282%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-17%20at%2013.45.58%20%283%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-17%20at%2013.45.58.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-17%20at%2013.45.59%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-17%20at%2013.45.59%20%282%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20ESPA%C3%91A/WhatsApp%20Image%202026-07-17%20at%2013.45.59.jpeg"
+    ]
   },
   {
     "id": "yaguarete-nemby",
@@ -592,7 +606,16 @@ const companies = [
         "obs": "La peor atención entre todas las sucursales de Yaguareté: sin seguimiento ni interés real.", "indice": 37.5
       }
     ],
-    "indice_atencion": 75.0, "tiempo_min": 1.7, "fotos": []
+    "indice_atencion": 75.0, "tiempo_min": 1.7, "fotos": [
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20%C3%91EMBY/2.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20%C3%91EMBY/WhatsApp%20Image%202026-07-09%20at%2011.28.36.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20%C3%91EMBY/WhatsApp%20Image%202026-07-09%20at%2011.28.37%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20%C3%91EMBY/WhatsApp%20Image%202026-07-09%20at%2011.28.37%20%282%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20%C3%91EMBY/WhatsApp%20Image%202026-07-09%20at%2011.28.37%20%283%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20%C3%91EMBY/WhatsApp%20Image%202026-07-09%20at%2011.28.37.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20%C3%91EMBY/WhatsApp%20Image%202026-07-09%20at%2011.28.38%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20%C3%91EMBY/WhatsApp%20Image%202026-07-09%20at%2011.28.38.jpeg"
+    ]
   },
   {
     "id": "yaguarete-mra",
@@ -611,7 +634,17 @@ const companies = [
         "obs": "El vendedor ofreció cintas adhesivas para el cierre de cajas: detalle proactivo.", "indice": 75.0
       }
     ],
-    "indice_atencion": 75.0, "tiempo_min": null, "fotos": []
+    "indice_atencion": 75.0, "tiempo_min": null, "fotos": [
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20MRA/WhatsApp%20Image%202026-07-08%20at%2018.56.48.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20MRA/WhatsApp%20Image%202026-07-08%20at%2018.56.49.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20MRA/WhatsApp%20Image%202026-07-08%20at%2018.56.50%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20MRA/WhatsApp%20Image%202026-07-08%20at%2018.56.50%20%282%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20MRA/WhatsApp%20Image%202026-07-08%20at%2018.56.50.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20MRA/WhatsApp%20Image%202026-07-08%20at%2018.56.51%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20MRA/WhatsApp%20Image%202026-07-08%20at%2018.56.51%20%282%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20MRA/WhatsApp%20Image%202026-07-08%20at%2018.56.51.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/YAGUARETE%20MRA/WhatsApp%20Image%202026-07-08%20at%2018.56.52%20%282%29.jpeg"
+    ]
   },
   {
     "id": "impress-pdv",
@@ -665,7 +698,10 @@ const companies = [
         "obs": "Sin producto exhibido; información entregada con reserva.", "indice": 62.5
       }
     ],
-    "indice_atencion": 68.8, "tiempo_min": 5.0, "fotos": []
+    "indice_atencion": 68.8, "tiempo_min": 5.0, "fotos": [
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/JWF/WhatsApp%20Image%202026-07-09%20at%2016.20.50%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/JWF/WhatsApp%20Image%202026-07-09%20at%2016.20.50.jpeg"
+    ]
   },
   {
     "id": "toddo",
@@ -692,7 +728,12 @@ const companies = [
         "obs": "Local desordenado, con productos de clientes apilados sin exhibir. Cotizó en el momento, pero sin resolver la necesidad de bajo volumen.", "indice": 62.5
       }
     ],
-    "indice_atencion": 62.5, "tiempo_min": 2.5, "fotos": []
+    "indice_atencion": 62.5, "tiempo_min": 2.5, "fotos": [
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/TODDO%20GROUP/WhatsApp%20Image%202026-07-09%20at%2011.28.39.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/TODDO%20GROUP/WhatsApp%20Image%202026-07-09%20at%2011.28.40%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/TODDO%20GROUP/WhatsApp%20Image%202026-07-09%20at%2011.28.40%20%282%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/TODDO%20GROUP/WhatsApp%20Image%202026-07-09%20at%2011.28.40.jpeg"
+    ]
   },
   {
     "id": "fc-publicidad",
@@ -710,7 +751,13 @@ const companies = [
         "obs": "Atención cordial, pero sin respaldo comercial real.", "indice": 75.0
       }
     ],
-    "indice_atencion": 75.0, "tiempo_min": 1.0, "fotos": []
+    "indice_atencion": 75.0, "tiempo_min": 1.0, "fotos": [
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/FC%20PUBLICIDAD/3.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/FC%20PUBLICIDAD/4.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/FC%20PUBLICIDAD/5.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/FC%20PUBLICIDAD/WhatsApp%20Image%202026-07-09%20at%2011.28.42.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/FC%20PUBLICIDAD/WhatsApp%20Image%202026-07-09%20at%2011.28.43.jpeg"
+    ]
   },
   {
     "id": "rapid-color",
@@ -736,7 +783,11 @@ const companies = [
         "obs": "Parecía un depósito. Ante objeción de precio: indiferente. Para humedad recomiendan plástico.", "indice": 25.0
       }
     ],
-    "indice_atencion": 50.0, "tiempo_min": 1.5, "fotos": []
+    "indice_atencion": 50.0, "tiempo_min": 1.5, "fotos": [
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/RAPID%20COLOR/WhatsApp%20Image%202026-07-09%20at%2011.52.03.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/RAPID%20COLOR/WhatsApp%20Image%202026-07-09%20at%2011.52.04%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/RAPID%20COLOR/WhatsApp%20Image%202026-07-09%20at%2011.52.04.jpeg"
+    ]
   },
   {
     "id": "yaguarete-cde",
@@ -754,7 +805,24 @@ const companies = [
         "obs": "Una de las mejores atenciones de Yaguareté: precios, medidas y personalización de memoria.", "indice": 87.5
       }
     ],
-    "indice_atencion": 87.5, "tiempo_min": null, "fotos": []
+    "indice_atencion": 87.5, "tiempo_min": null, "fotos": [
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/CARTONES%20YAGUARETE%20CDE/WhatsApp%20Image%202026-07-17%20at%2017.14.21.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/CARTONES%20YAGUARETE%20CDE/WhatsApp%20Image%202026-07-17%20at%2017.14.43.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/CARTONES%20YAGUARETE%20CDE/WhatsApp%20Image%202026-07-17%20at%2017.14.45.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/CARTONES%20YAGUARETE%20CDE/WhatsApp%20Image%202026-07-17%20at%2017.14.46.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/CARTONES%20YAGUARETE%20CDE/WhatsApp%20Image%202026-07-17%20at%2017.14.48%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/CARTONES%20YAGUARETE%20CDE/WhatsApp%20Image%202026-07-17%20at%2017.14.48.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/CARTONES%20YAGUARETE%20CDE/WhatsApp%20Image%202026-07-17%20at%2017.14.49%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/CARTONES%20YAGUARETE%20CDE/WhatsApp%20Image%202026-07-17%20at%2017.14.49%20%282%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/CARTONES%20YAGUARETE%20CDE/WhatsApp%20Image%202026-07-17%20at%2017.14.49%20%283%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/CARTONES%20YAGUARETE%20CDE/WhatsApp%20Image%202026-07-17%20at%2017.14.49.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/CARTONES%20YAGUARETE%20CDE/WhatsApp%20Image%202026-07-17%20at%2017.14.50%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/CARTONES%20YAGUARETE%20CDE/WhatsApp%20Image%202026-07-17%20at%2017.14.50.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/CARTONES%20YAGUARETE%20CDE/WhatsApp%20Image%202026-07-17%20at%2017.14.51.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/CARTONES%20YAGUARETE%20CDE/WhatsApp%20Image%202026-07-17%20at%2017.14.52.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/CARTONES%20YAGUARETE%20CDE/WhatsApp%20Image%202026-07-17%20at%2017.14.53.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/CARTONES%20YAGUARETE%20CDE/WhatsApp%20Image%202026-07-17%20at%2017.14.56.jpeg"
+    ]
   },
   {
     "id": "paper-box-hernandarias",
@@ -772,7 +840,9 @@ const companies = [
         "obs": "Escribió por redes sin retorno. En el local, atención hostil por ventana: no atienden presencial.", "indice": 12.5
       }
     ],
-    "indice_atencion": 12.5, "tiempo_min": 5.0, "fotos": []
+    "indice_atencion": 12.5, "tiempo_min": 5.0, "fotos": [
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/PAPER%20BOX/WhatsApp%20Image%202026-07-17%20at%2017.19.32.jpeg"
+    ]
   },
   {
     "id": "formupar",
@@ -790,7 +860,14 @@ const companies = [
         "obs": "Lo pasaron con el dueño y un vendedor junto a la fábrica. Al día siguiente ya tenía la propuesta con seguimiento.", "indice": 62.5
       }
     ],
-    "indice_atencion": 62.5, "tiempo_min": 20.0, "fotos": []
+    "indice_atencion": 62.5, "tiempo_min": 20.0, "fotos": [
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/FORMUPAR/WhatsApp%20Image%202026-07-17%20at%2016.26.03.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/FORMUPAR/WhatsApp%20Image%202026-07-17%20at%2016.26.04.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/FORMUPAR/WhatsApp%20Image%202026-07-17%20at%2016.26.09%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/FORMUPAR/WhatsApp%20Image%202026-07-17%20at%2016.26.09.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/FORMUPAR/WhatsApp%20Image%202026-07-17%20at%2016.26.10.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/FORMUPAR/WhatsApp%20Image%202026-07-17%20at%2016.26.11.jpeg"
+    ]
   },
   {
     "id": "bpr-pdv",
@@ -878,7 +955,14 @@ const companies = [
         "obs": "Bien atendidos; se nota que trabajan volúmenes grandes.", "indice": 50.0
       }
     ],
-    "indice_atencion": 50.0, "tiempo_min": 1.0, "fotos": []
+    "indice_atencion": 50.0, "tiempo_min": 1.0, "fotos": [
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/ARTES%20GRAFICAS%20EL%20CASTILLO/WhatsApp%20Image%202026-07-17%20at%2016.13.38%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/ARTES%20GRAFICAS%20EL%20CASTILLO/WhatsApp%20Image%202026-07-17%20at%2016.13.38%20%282%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/ARTES%20GRAFICAS%20EL%20CASTILLO/WhatsApp%20Image%202026-07-17%20at%2016.13.38.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/ARTES%20GRAFICAS%20EL%20CASTILLO/WhatsApp%20Image%202026-07-17%20at%2016.13.39%20%281%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/ARTES%20GRAFICAS%20EL%20CASTILLO/WhatsApp%20Image%202026-07-17%20at%2016.13.39%20%282%29.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/CDE/ARTES%20GRAFICAS%20EL%20CASTILLO/WhatsApp%20Image%202026-07-17%20at%2016.13.39.jpeg"
+    ]
   },
   {
     "id": "publi-mass-media",
@@ -914,7 +998,11 @@ const companies = [
         "obs": "El equipo reconoció al shopper, no es control ciego formal. Sin señalética visible desde la calle; exhibición interna sin precios a la vista, con muestras todas juntas.", "indice": 100.0
       }
     ],
-    "indice_atencion": 100.0, "tiempo_min": 3.0, "fotos": []
+    "indice_atencion": 100.0, "tiempo_min": 3.0, "fotos": [
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/ENVACO%20POP/WhatsApp%20Image%202026-07-19%20at%2020.2.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/ENVACO%20POP/WhatsApp%20Image%202026-07-19%20at%2020.23.50.jpeg",
+      "https://raw.githubusercontent.com/raullrr98/envaco/main/VISITA%20PRESENCIAL/ENVACO%20POP/WhatsApp%20Image%202026-07-19%20at%2020.23.51.jpeg"
+    ]
   },
   {
     "id": "envaco-industria",
@@ -963,21 +1051,6 @@ const dimensiones = [
   "Cotizaciones","Fortalezas","Debilidades","Oportunidades para Envaco"
 ];
 
-const metodologiaSteps = [
-  {n:"01", t:"Selección de puntos", d:"Empresas y locales relevantes por zona y peso competitivo."},
-  {n:"02", t:"Contacto simulado", d:"Un cliente ficticio solicitó cotización por los canales habituales."},
-  {n:"03", t:"Registro estructurado", d:"Tiempos, materiales, trato y cotización bajo una misma ficha."},
-  {n:"04", t:"Análisis comparativo", d:"Cruce de datos para el benchmark y las recomendaciones."},
-];
-
-const journeyStages = [
-  {t:"Contacto inicial", s:"Primer acercamiento", d:"La mayoría de las visitas tuvo esperas de 5 min o menos. Excepciones: Formupar (~20 min), PM Producciones (rechazada dos veces) y Paper Box (atención por ventana, sin trato presencial)."},
-  {t:"Trato", s:"Calidad de la atención", d:"Depende fuertemente de quién atiende: en la misma sucursal (Yaguareté España) una visita fue \"muy amable\" y la otra indiferente."},
-  {t:"Precio y todo virtual", s:"Información comercial", d:"Casi todo el ciclo de cotización ocurre por WhatsApp, no en el local. Solo una minoría de visitas cerró un precio claro en el momento; en el resto quedó pendiente o nunca llegó (Editex, Publi Mass Media)."},
-  {t:"Cotización formal", s:"Propuesta por escrito", d:"Ninguna empresa relevada entregó una cotización formal por escrito durante la visita presencial: siempre fue verbal o quedó para WhatsApp."},
-  {t:"Seguimiento", s:"Post-visita", d:"No se registró seguimiento proactivo posterior a la visita en ningún caso presencial relevado."},
-];
-
 const fortalezas = [
   {k:"Atención inicial", t:"Trato cálido en el primer contacto", d:"La mayoría de las visitas fue cordial y con disposición a ayudar."},
   {k:"Velocidad", t:"Esperas cortas, con excepciones puntuales", d:"5 minutos o menos en la mayoría de los casos (excepto Formupar, PM Producciones y Paper Box)."},
@@ -992,12 +1065,12 @@ const debilidades = [
 const oportunidades = [
   {k:"Oportunidad 01", t:"Precios por escala, siempre disponibles", d:"Ofrecer una lista clara y accesible cuando la mitad del mercado no logra darla en la visita."},
   {k:"Oportunidad 02", t:"Consistencia de atención", d:"Sostener el mismo nivel de trato sin importar quién reciba al cliente."},
-  {k:"Oportunidad 03", t:"Terreno de exhibidores/POP", d:"Toddo, FC Publicidad y JWF ya no compiten en cartón — se movieron a exhibidores, el terreno de Envaco."},
+  {k:"Oportunidad 03", t:"Terreno de exhibidores/POP", d:"FC Publicidad y JWF ya no compiten en cartón — se movieron a exhibidores, el terreno de Envaco. Toddo, en cambio, sí tiene cartones y compite directo con Envaco en esa línea."},
 ];
 
 const insights = [
   "La velocidad ya es alta en toda la plaza: Envaco no se diferencia por rapidez, la batalla es el trato y la consistencia.",
-  "3 de 16 competidores relevados (Toddo, FC Publicidad, JWF) ya no compiten en cartón — se movieron a exhibidores y stands.",
+  "2 de 16 competidores relevados (FC Publicidad, JWF) ya no compiten en cartón — se movieron a exhibidores y stands. Toddo sí tiene cartones y compite directo con Envaco.",
   "La transparencia de precios es el punto más débil del mercado: casi la mitad de las visitas no cerró información clara.",
 ];
 
@@ -1007,7 +1080,7 @@ const digitalHallazgos = [
   {k:"Bot — Yaguareté", t:"No tiene bot en ninguna línea", d:"Las 5 líneas relevadas responden siempre con una persona real, sin menú automático previo.", pill:"ok"},
   {k:"Respuesta promedio — Envaco", t:"Mismo día, con demoras de horas", d:"La línea de Ventas (Melissa) es la más rápida y consistente; el resto responde el mismo día pero con esperas de varias horas entre mensajes."},
   {k:"Respuesta promedio — Yaguareté", t:"Mismo día a día siguiente", d:"La mayoría responde el mismo día; una línea contestó \"por orden de llegada\" recién al día siguiente."},
-  {k:"Interés en cerrar la venta", t:"Depende de la línea, en ambas marcas", d:"Solo 2 de 10 contactos relevados (uno por marca) llegaron a una cotización cerrada. El resto abre la conversación pero no siempre empuja al cierre."},
+  {k:"Interés en cerrar la venta", t:"Depende de la línea, en ambas marcas", d:"Solo 2 llegaron a una cotización cerrada. El resto abre la conversación pero no siempre empuja al cierre."},
   {k:"Todo el ciclo es virtual", t:"WhatsApp de punta a punta", d:"En ninguno de los dos casos el ciclo de cotización se cierra de forma presencial: todo el intercambio de precio y condiciones ocurre por chat."},
   {k:"Posicionamiento en Google", t:"Envaco aparece muy abajo en la búsqueda orgánica", d:"Al buscar en Google, el sitio de Envaco no aparece entre los primeros resultados — brecha de SEO frente a Yaguareté."},
 ];
@@ -1027,27 +1100,34 @@ const redesSeparacion = "Nota: esta auditoría de redes analiza a Envaco como un
 
 /* ============ CARTELERÍA E INFRAESTRUCTURA ============ */
 const infraestructura = [
-  {empresa:"Envaco Industria", cartel:"Sin cartel ni señalización visible en fachada.", exhibicion:"Sin productos ni muestras exhibidas al público — trabaja sobre producción, no exhibición.", tono:"neg"},
+  {empresa:"Envaco Industria", cartel:"Sí cuenta con cartelería en el exterior.", exhibicion:"Sin productos ni muestras exhibidas al público — trabaja sobre producción, no exhibición.", tono:"mix"},
   {empresa:"Envaco POP", cartel:"Sin dato de cartelería exterior relevado.", exhibicion:"Tiene muestras, pero están todas juntas y encimadas, sin segmentar por línea o producto.", tono:"warn"},
-  {empresa:"Cartones Yaguareté", cartel:"Puntos de venta identificados y visibles en la vía pública (6 locales).", exhibicion:"Salón óptimo: todo ordenado, con precio y tamaño a la vista del cliente.", tono:"pos"},
+  {empresa:"Cartones Yaguareté", cartel:"Puntos de venta identificados y visibles en la vía pública (6 locales), con señalización para ubicar cada local.", exhibicion:"Salón óptimo: todo ordenado, con precio y tamaño a la vista del cliente.", tono:"pos"},
 ];
 
 /* ============ POLÍTICAS COMERCIALES Y FIDELIZACIÓN ============ */
 const politicasComerciales = [
-  {k:"Gestión de venta", t:"Interés en cerrar, proceso 100% virtual", d:"En el mejor caso (Ventas/Melissa) hay seguimiento proactivo con ficha técnica — pero todo el ciclo ocurre por WhatsApp, sin instancia presencial de cierre."},
+  {k:"Gestión de venta", t:"Interés en cerrar, proceso 100% virtual", d:"Fue <b>Envaco POP</b> (línea de Ventas, asesora Melissa) la que mostró mayor interés en cerrar la venta, con seguimiento proactivo y ficha técnica — pero todo el ciclo ocurre por WhatsApp, sin instancia presencial de cierre."},
   {k:"Fidelización — Yaguareté", t:"Programa \"Cliente Fiel\" confirmado", d:"Yaguareté cuenta con programa de cliente frecuente / fidelización activo."},
   {k:"Fidelización — Envaco", t:"Sin programa de fidelización", d:"No se relevó ningún mecanismo de descuento por recurrencia en Envaco."},
+];
+
+const industriaComparativa = [
+  {dim:"Ubicación / visita relevada", envaco:"Mariano Roque Alonso — visitada (control interno, asesora Luisa).", yaguarete:"Sin datos relevados."},
+  {dim:"Volumen mínimo de producción", envaco:"Fabrica desde 2.000 unidades.", yaguarete:"Sin datos relevados."},
+  {dim:"Requisitos formales para pedidos", envaco:"Solicita RUC y requisitos formales para pedidos industriales.", yaguarete:"Sin datos relevados."},
+  {dim:"Plazo de entrega informado", envaco:"7 días hábiles.", yaguarete:"Sin datos relevados."},
+  {dim:"Cartelería / señalización exterior", envaco:"Sí cuenta con cartelería en el exterior.", yaguarete:"Sin datos relevados."},
+  {dim:"Muestras / exhibición al público", envaco:"Sin muestras ni productos exhibidos — trabaja sobre producción, no exhibición.", yaguarete:"Sin datos relevados."},
+  {dim:"Trato en la visita", envaco:"Muy bien, con ganas de ayudar — local limpio y ordenado.", yaguarete:"Sin datos relevados."},
 ];
 
 /* ============ RENDER ESTÁTICO ============ */
 document.getElementById('dimensiones-tags').innerHTML = dimensiones.map(d=>`<div class="tag"><span class="dot"></span>${d}</div>`).join('');
 
-document.getElementById('metodologia-steps').innerHTML = metodologiaSteps.map(s=>`
-  <div class="step-card"><div class="n">${s.n}</div><h3>${s.t}</h3><p>${s.d}</p></div>`).join('');
-
 document.getElementById('company-grid').innerHTML = companies.map(c=>`
   <div class="company-card" onclick="openCompany('${c.id}')">
-    <div class="thumb">fotos pendientes</div>
+    <div class="thumb" ${c.fotos.length ? `style="background-image:url('${c.fotos[0]}'); background-size:cover; background-position:center;"` : ''}>${c.fotos.length ? '' : 'fotos pendientes'}</div>
     <h4>${c.nombre}${c.sucursal ? ' · '+c.sucursal.split(' ')[0] : ''}</h4>
     <div class="zone">${c.rubro}</div>
   </div>`).join('');
@@ -1073,11 +1153,30 @@ companies.forEach(c=>{
   if(!pos) return;
   const peso = Math.max(1, c.visitas.length);
   heatPoints.push([pos[0], pos[1], peso]);
+  let pinColor = '#E0B24E'; // amarillo por defecto (resto de competidores)
+  if(c.id.startsWith('envaco')) pinColor = '#2FB854'; // verde Envaco
+  else if(c.id.startsWith('yaguarete')) pinColor = '#E0524D'; // rojo Yaguareté
   const marker = L.circleMarker(pos, {
-    radius:8, color:'#15130F', weight:2, fillColor:'#2FB854', fillOpacity:1
+    radius:8, color:'#15130F', weight:2, fillColor:pinColor, fillOpacity:1
   }).addTo(map);
   marker.bindPopup(`<b>${c.nombre}</b>${c.sucursal ? ' · '+c.sucursal : ''}<br>${c.rubro}`);
   marker.on('click', ()=>openCompany(c.id));
+  marker.on('mouseover', ()=>marker.openPopup());
+});
+
+// Puntos de referencia: ubicaciones conocidas de Yaguareté sin visita mystery
+// shopper relevada todavía — se muestran en el mapa (en rojo, mismo color de
+// marca) para completar la cobertura geográfica, pero no abren ficha.
+const referenciasMapa = [
+  {nombre:"Cartones Yaguareté · San Lorenzo", pos:[-25.342878515084784, -57.49267481471467]},
+  {nombre:"Cartones Yaguareté · Acceso Sur", pos:[-25.349901945681644, -57.57347101534359]},
+];
+referenciasMapa.forEach(r=>{
+  heatPoints.push([r.pos[0], r.pos[1], 1]);
+  const marker = L.circleMarker(r.pos, {
+    radius:8, color:'#15130F', weight:2, fillColor:'#E0524D', fillOpacity:1
+  }).addTo(map);
+  marker.bindPopup(`<b>${r.nombre}</b><br><span style="opacity:.6;">Sin datos relevados — solo ubicación</span>`);
   marker.on('mouseover', ()=>marker.openPopup());
 });
 
@@ -1107,16 +1206,6 @@ document.getElementById('compare-rows').innerHTML = compareDims.map(dim=>{
   }).join('');
   return `<div class="compare-row"><div class="lbl-row"><span>${dim.label}</span></div><div class="compare-track">${rowsHtml}</div></div>`;
 }).join('');
-
-document.getElementById('journey-track').innerHTML = journeyStages.map((s,i)=>`
-  <div class="journey-stage ${i===0?'on':''}" data-i="${i}" onclick="setJourney(${i})">
-    <div class="pip"></div><h4>${s.t}</h4><div class="sub">${s.s}</div>
-  </div>`).join('');
-function setJourney(i){
-  document.querySelectorAll('.journey-stage').forEach(el=>el.classList.toggle('on', +el.dataset.i===i));
-  document.getElementById('journey-detail').innerHTML = `<p>${journeyStages[i].d}</p>`;
-}
-setJourney(0);
 
 function renderFoda(id, arr, cls){
   document.getElementById(id).innerHTML = arr.map(x=>`
@@ -1163,19 +1252,22 @@ document.getElementById('politicas-grid').innerHTML = politicasComerciales.map(x
     <div class="k">${x.k}</div><h4>${x.t}</h4><p>${x.d}</p>
   </div>`).join('');
 
+document.getElementById('industria-table-body').innerHTML = industriaComparativa.map(r=>`
+  <tr><td>${r.dim}</td><td>${r.envaco}</td><td style="color:var(--carbon-45); font-style:italic;">${r.yaguarete}</td></tr>`).join('');
+
 /* ============ NAV ENGINE ============ */
-const sceneOrder = ['cover','agenda','objetivo','metodologia','mapa','empresas',
+const sceneOrder = ['cover','agenda','objetivo','mapa','empresas',
   'digital','webcompare','redes','infraestructura','politicas',
-  'comparativa','journey','fortalezas','debilidades','insights','oportunidades','conclusiones'];
+  'comparativa','fortalezas','debilidades','insights','oportunidades','industria','conclusiones'];
 const sceneTitles = {
-  cover:'Portada', agenda:'Agenda', objetivo:'Objetivo del estudio', metodologia:'Metodología',
+  cover:'Portada', agenda:'Agenda', objetivo:'Objetivo del estudio',
   mapa:'Cobertura geográfica', empresas:'Empresas relevadas',
   digital:'Bot, respuesta e interés en cerrar', webcompare:'Comparación de páginas web',
   redes:'Redes sociales: Envaco vs. Yaguareté', infraestructura:'Cartelería e infraestructura',
   politicas:'Políticas comerciales y fidelización',
-  comparativa:'Comparativa entre empresas', journey:'Customer journey',
+  comparativa:'Comparativa entre empresas',
   fortalezas:'Fortalezas', debilidades:'Debilidades', insights:'Insights',
-  oportunidades:'Oportunidades para Envaco', conclusiones:'Conclusiones'
+  oportunidades:'Oportunidades para Envaco', industria:'Yaguareté Industria vs. Envaco Industria', conclusiones:'Conclusiones'
 };
 let current = 0;
 
@@ -1259,7 +1351,12 @@ function renderOverlay(photoOnly){
     c.fotos.forEach((f,i)=>{
       const div = document.createElement('div');
       div.className = 'ov-photo' + (i===ovPhotoIndex ? ' show':'');
-      div.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M21 16l-5-5-4 4-3-3-5 5"/></svg><span>${f}</span>`;
+      const esFotoReal = /\.(jpe?g|png|webp|gif)$/i.test(f);
+      if(esFotoReal){
+        div.innerHTML = `<img src="${f}" alt="${c.nombre} · foto ${i+1}" loading="lazy">`;
+      } else {
+        div.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M21 16l-5-5-4 4-3-3-5 5"/></svg><span>${f}</span>`;
+      }
       gallery.insertBefore(div, document.getElementById('ov-dots'));
     });
     document.getElementById('ov-dots').innerHTML = c.fotos.map((_,i)=>`<span class="${i===ovPhotoIndex?'on':''}"></span>`).join('');
